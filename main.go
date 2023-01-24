@@ -1,10 +1,9 @@
 package main
 
 import (
+	"github.com/adeo-opensource/terraform-provider-awx/awx"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
-
-	"github.com/denouche/terraform-provider-awx/awx"
 )
 
 func main() {
