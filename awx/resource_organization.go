@@ -5,7 +5,7 @@ Example Usage
 
 ```hcl
 resource "awx_organization" "default" {
-    name = "acc-test"
+    name = "acc-runTestCase"
 }
 ```
 
@@ -53,6 +53,11 @@ func resourceOrganization() *schema.Resource {
 				Optional:    true,
 				Description: "Local absolute file path containing a custom Python virtualenv to use",
 			},
+			"project_id": {
+				Type:     schema.TypeInt,
+				Required: false,
+				Optional: true,
+			},
 		},
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
@@ -68,8 +73,7 @@ func resourceOrganization() *schema.Resource {
 
 func resourceOrganizationsCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.OrganizationsService
+	awxService := m.(awx.AWX)
 
 	result, err := awxService.CreateOrganization(map[string]interface{}{
 		"name":              d.Get("name").(string),
@@ -93,8 +97,7 @@ func resourceOrganizationsCreate(ctx context.Context, d *schema.ResourceData, m 
 
 func resourceOrganizationsUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.OrganizationsService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Update Organizations", d)
 	if diags.HasError() {
 		return diags
@@ -127,8 +130,7 @@ func resourceOrganizationsUpdate(ctx context.Context, d *schema.ResourceData, m 
 
 func resourceOrganizationsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.OrganizationsService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Read Organizations", d)
 	if diags.HasError() {
 		return diags
@@ -146,8 +148,7 @@ func resourceOrganizationsRead(ctx context.Context, d *schema.ResourceData, m in
 func resourceOrganizationsDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 	digMessagePart := "Organization"
-	client := m.(*awx.AWX)
-	awxService := client.OrganizationsService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Delete Organization", d)
 	if diags.HasError() {
 		return diags

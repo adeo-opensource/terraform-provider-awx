@@ -13,7 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func getResourceJobTemplateNotificationTemplateAssociateFuncForType(client *awx.JobTemplateNotificationTemplatesService, typ string) func(jobTemplateID int, notificationTemplateID int) (*awx.NotificationTemplate, error) {
+func getResourceJobTemplateNotificationTemplateAssociateFuncForType(client awx.JobTemplateNotificationTemplatesService, typ string) func(jobTemplateID int, notificationTemplateID int) (*awx.NotificationTemplate, error) {
 	switch typ {
 	case "error":
 		return client.AssociateJobTemplateNotificationTemplatesError
@@ -25,7 +25,7 @@ func getResourceJobTemplateNotificationTemplateAssociateFuncForType(client *awx.
 	return nil
 }
 
-func getResourceJobTemplateNotificationTemplateDisassociateFuncForType(client *awx.JobTemplateNotificationTemplatesService, typ string) func(jobTemplateID int, notificationTemplateID int) (*awx.NotificationTemplate, error) {
+func getResourceJobTemplateNotificationTemplateDisassociateFuncForType(client awx.JobTemplateNotificationTemplatesService, typ string) func(jobTemplateID int, notificationTemplateID int) (*awx.NotificationTemplate, error) {
 	switch typ {
 	case "error":
 		return client.DisassociateJobTemplateNotificationTemplatesError
@@ -40,17 +40,15 @@ func getResourceJobTemplateNotificationTemplateDisassociateFuncForType(client *a
 func resourceJobTemplateNotificationTemplateCreateForType(typ string) func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	return func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 		var diags diag.Diagnostics
-		client := m.(*awx.AWX)
-		awxJobTemplateService := client.JobTemplateService
+		awxService := m.(awx.AWX)
 		jobTemplateID := d.Get("job_template_id").(int)
-		_, err := awxJobTemplateService.GetJobTemplateByID(jobTemplateID, make(map[string]string))
+		_, err := awxService.GetJobTemplateByID(jobTemplateID, make(map[string]string))
 		if err != nil {
 			return buildDiagNotFoundFail("job template", jobTemplateID, err)
 		}
 
-		awxJobTemplateNotifService := client.JobTemplateNotificationTemplatesService
 		notificationTemplateID := d.Get("notification_template_id").(int)
-		associationFunc := getResourceJobTemplateNotificationTemplateAssociateFuncForType(awxJobTemplateNotifService, typ)
+		associationFunc := getResourceJobTemplateNotificationTemplateAssociateFuncForType(awxService, typ)
 		if associationFunc == nil {
 			return buildDiagnosticsMessage("Create: JobTemplate not AssociateJobTemplateNotificationTemplates", "Fail to find association function for notification_template type %s", typ)
 		}
@@ -73,24 +71,22 @@ func resourceJobTemplateNotificationTemplateRead(ctx context.Context, d *schema.
 func resourceJobTemplateNotificationTemplateDeleteForType(typ string) func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	return func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 		var diags diag.Diagnostics
-		client := m.(*awx.AWX)
-		awxJobTemplateService := client.JobTemplateService
+		awxService := m.(awx.AWX)
 		jobTemplateID := d.Get("job_template_id").(int)
-		_, err := awxJobTemplateService.GetJobTemplateByID(jobTemplateID, make(map[string]string))
+		_, err := awxService.GetJobTemplateByID(jobTemplateID, make(map[string]string))
 		if err != nil {
 			return buildDiagNotFoundFail("job template", jobTemplateID, err)
 		}
 
-		awxJobTemplateNotifService := client.JobTemplateNotificationTemplatesService
 		notificationTemplateID := d.Get("notification_template_id").(int)
-		disassociationFunc := getResourceJobTemplateNotificationTemplateDisassociateFuncForType(awxJobTemplateNotifService, typ)
+		disassociationFunc := getResourceJobTemplateNotificationTemplateDisassociateFuncForType(awxService, typ)
 		if disassociationFunc == nil {
 			return buildDiagnosticsMessage("Create: JobTemplate not DisassociateJobTemplateNotificationTemplates", "Fail to find disassociation function for notification_template type %s", typ)
 		}
 
 		_, err = disassociationFunc(jobTemplateID, notificationTemplateID)
 		if err != nil {
-			return buildDiagnosticsMessage("Create: JobTemplate not DisassociateJobTemplateNotificationTemplates", "Fail to associate notification_template credentials with ID %v, for job_template ID %v, got error: %s", notificationTemplateID, jobTemplateID, err.Error())
+			return buildDiagnosticsMessage("Create: JobTemplate not DisassociateJobTemplateNotificationTemplates", "Fail to disassociate notification_template credentials with ID %v, for job_template ID %v, got error: %s", notificationTemplateID, jobTemplateID, err.Error())
 		}
 
 		d.SetId("")

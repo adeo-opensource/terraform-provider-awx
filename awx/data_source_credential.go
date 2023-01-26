@@ -1,14 +1,15 @@
 /*
 Use this data source to query credential by ID.
 
-Example Usage
+# Example Usage
 
 ```hcl
-data "awx_credential" "default" {
-    id = 1
-}
-```
 
+	data "awx_credential" "default" {
+		id = 1
+	}
+
+```
 */
 package awx
 
@@ -48,7 +49,7 @@ func dataSourceCredentialByID() *schema.Resource {
 func dataSourceCredentialByIDRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	client := m.(*awx.AWX)
+	client := m.(awx.CredentialsService)
 	id := d.Get("id").(int)
 
 	if id == 0 {
@@ -60,7 +61,7 @@ func dataSourceCredentialByIDRead(ctx context.Context, d *schema.ResourceData, m
 		return diags
 	}
 
-	cred, err := client.CredentialsService.GetCredentialsByID(id, map[string]string{})
+	cred, err := client.GetCredentialsByID(id, map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,

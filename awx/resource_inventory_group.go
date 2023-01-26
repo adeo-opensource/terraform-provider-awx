@@ -5,7 +5,7 @@ Example Usage
 
 ```hcl
 resource "awx_inventory_group" "default" {
-    name = "acc-test"
+    name = "acc-runTestCase"
 }
 ```
 
@@ -41,7 +41,7 @@ func resourceInventoryGroup() *schema.Resource {
 				Default:  "",
 			},
 			"inventory_id": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Optional: true,
 				ForceNew: true,
 			},
@@ -60,13 +60,12 @@ func resourceInventoryGroup() *schema.Resource {
 
 func resourceInventoryGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 
-	client := m.(*awx.AWX)
-	awxService := client.GroupService
+	awxService := m.(awx.AWX)
 
 	result, err := awxService.CreateGroup(map[string]interface{}{
 		"name":        d.Get("name").(string),
 		"description": d.Get("description").(string),
-		"inventory":   d.Get("inventory_id").(string),
+		"inventory":   d.Get("inventory_id").(int),
 		"variables":   d.Get("variables").(string),
 	}, map[string]string{})
 	if err != nil {
@@ -79,8 +78,8 @@ func resourceInventoryGroupCreate(ctx context.Context, d *schema.ResourceData, m
 }
 
 func resourceInventoryGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.GroupService
+	awxService := m.(awx.AWX)
+
 	id, diags := convertStateIDToNummeric(diagElementInventoryGroupTitle, d)
 	if diags.HasError() {
 		return diags
@@ -89,7 +88,7 @@ func resourceInventoryGroupUpdate(ctx context.Context, d *schema.ResourceData, m
 	_, err := awxService.UpdateGroup(id, map[string]interface{}{
 		"name":        d.Get("name").(string),
 		"description": d.Get("description").(string),
-		"inventory":   d.Get("inventory_id").(string),
+		"inventory":   d.Get("inventory_id").(int),
 		"variables":   d.Get("variables").(string),
 	}, nil)
 	if err != nil {
@@ -101,8 +100,7 @@ func resourceInventoryGroupUpdate(ctx context.Context, d *schema.ResourceData, m
 }
 
 func resourceInventoryGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.GroupService
+	awxService := m.(awx.AWX)
 
 	id, diags := convertStateIDToNummeric(diagElementInventoryGroupTitle, d)
 	if diags.HasError() {
@@ -121,8 +119,7 @@ func resourceInventoryGroupDelete(ctx context.Context, d *schema.ResourceData, m
 
 func resourceInventoryGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.GroupService
+	awxService := m.(awx.AWX)
 
 	id, diags := convertStateIDToNummeric(diagElementInventoryGroupTitle, d)
 	if diags.HasError() {

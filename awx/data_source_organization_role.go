@@ -1,19 +1,20 @@
 /*
 Use this data source to list organization roles for a specified organization.
 
-Example Usage
+# Example Usage
 
 ```hcl
-resource "awx_organization" "myorg" {
-    name = "My AWX Org"
-}
 
-data "awx_organization_role" "org_admins" {
-    name            = "Admin"
-    organization_id = resource.awx_organization.myorg.id
-}
+	resource "awx_organization" "myorg" {
+	    name = "My AWX Org"
+	}
+
+	data "awx_organization_role" "org_admins" {
+	    name            = "Admin"
+	    organization_id = resource.awx_organization.myorg.id
+	}
+
 ```
-
 */
 package awx
 
@@ -50,7 +51,7 @@ func dataSourceOrganizationRole() *schema.Resource {
 
 func dataSourceOrganizationRolesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	params := make(map[string]string)
 
 	orgId := d.Get("organization_id").(int)
@@ -63,7 +64,7 @@ func dataSourceOrganizationRolesRead(ctx context.Context, d *schema.ResourceData
 		return diags
 	}
 
-	organization, err := client.OrganizationsService.GetOrganizationsByID(orgId, params)
+	organization, err := client.GetOrganizationsByID(orgId, params)
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Get: Fail to fetch organization role",

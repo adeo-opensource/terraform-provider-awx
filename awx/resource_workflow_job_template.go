@@ -118,14 +118,17 @@ func resourceWorkflowJobTemplate() *schema.Resource {
 				Optional: true,
 				Default:  "",
 			},
+			"project_id": {
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
 
 func resourceWorkflowJobTemplateCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateService
+	awxService := m.(awx.AWX)
 
 	result, err := awxService.CreateWorkflowJobTemplate(map[string]interface{}{
 		"name":                     d.Get("name").(string),
@@ -160,8 +163,7 @@ func resourceWorkflowJobTemplateCreate(ctx context.Context, d *schema.ResourceDa
 
 func resourceWorkflowJobTemplateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Update WorkflowJobTemplate", d)
 	if diags.HasError() {
 		return diags
@@ -204,8 +206,7 @@ func resourceWorkflowJobTemplateUpdate(ctx context.Context, d *schema.ResourceDa
 
 func resourceWorkflowJobTemplateRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Read WorkflowJobTemplate", d)
 	if diags.HasError() {
 		return diags
@@ -221,16 +222,15 @@ func resourceWorkflowJobTemplateRead(ctx context.Context, d *schema.ResourceData
 }
 
 func resourceWorkflowJobTemplateDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateService
-	id, diags := convertStateIDToNummeric(diagElementHostTitle, d)
+	awxService := m.(awx.AWX)
+	id, diags := convertStateIDToNummeric("WorkflowJobTemplate", d)
 	if diags.HasError() {
 		return diags
 	}
 
 	if _, err := awxService.DeleteWorkflowJobTemplate(id); err != nil {
 		return buildDiagDeleteFail(
-			diagElementHostTitle,
+			"WorkflowJobTemplate",
 			fmt.Sprintf("id %v, got %s ",
 				id, err.Error()))
 	}

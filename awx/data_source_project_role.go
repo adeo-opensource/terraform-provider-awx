@@ -1,19 +1,20 @@
 /*
 Use this data source to list project roles for a speficied project.
 
-Example Usage
+# Example Usage
 
 ```hcl
-resource "awx_project" "myproj" {
-    name = "My AWX Project"
-}
 
-data "awx_project_role" "proj_admins" {
-    name       = "Admin"
-    project_id = resource.awx_project.myproj.id
-}
+	resource "awx_project" "myproj" {
+	    name = "My AWX Project"
+	}
+
+	data "awx_project_role" "proj_admins" {
+	    name       = "Admin"
+	    project_id = resource.awx_project.myproj.id
+	}
+
 ```
-
 */
 package awx
 
@@ -50,7 +51,7 @@ func dataSourceProjectRole() *schema.Resource {
 
 func dataSourceProjectRolesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	params := make(map[string]string)
 
 	projectId := d.Get("project_id").(int)
@@ -63,7 +64,7 @@ func dataSourceProjectRolesRead(ctx context.Context, d *schema.ResourceData, m i
 		return diags
 	}
 
-	project, err := client.ProjectService.GetProjectByID(projectId, params)
+	project, err := client.GetProjectByID(projectId, params)
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Get: Fail to fetch Project",

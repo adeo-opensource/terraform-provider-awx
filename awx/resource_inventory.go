@@ -9,7 +9,7 @@ data "awx_organization" "default" {
 }
 
 resource "awx_inventory" "default" {
-    name            = "acc-test"
+    name            = "acc-runTestCase"
     organization_id = data.awx_organization.default.id
     variables       = <<YAML
 ---
@@ -51,7 +51,7 @@ func resourceInventory() *schema.Resource {
 				Default:  "",
 			},
 			"organization_id": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Required: true,
 			},
 			"kind": {
@@ -78,12 +78,11 @@ func resourceInventory() *schema.Resource {
 }
 
 func resourceInventoryCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.InventoriesService
+	awxService := m.(awx.AWX)
 
 	result, err := awxService.CreateInventory(map[string]interface{}{
 		"name":         d.Get("name").(string),
-		"organization": d.Get("organization_id").(string),
+		"organization": d.Get("organization_id").(int),
 		"description":  d.Get("description").(string),
 		"kind":         d.Get("kind").(string),
 		"host_filter":  d.Get("host_filter").(string),
@@ -99,15 +98,14 @@ func resourceInventoryCreate(ctx context.Context, d *schema.ResourceData, m inte
 }
 
 func resourceInventoryUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.InventoriesService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric(diagElementInventoryTitle, d)
 	if diags.HasError() {
 		return diags
 	}
 	_, err := awxService.UpdateInventory(id, map[string]interface{}{
 		"name":         d.Get("name").(string),
-		"organization": d.Get("organization_id").(string),
+		"organization": d.Get("organization_id").(int),
 		"description":  d.Get("description").(string),
 		"kind":         d.Get("kind").(string),
 		"host_filter":  d.Get("host_filter").(string),
@@ -122,8 +120,7 @@ func resourceInventoryUpdate(ctx context.Context, d *schema.ResourceData, m inte
 }
 
 func resourceInventoryRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.InventoriesService
+	awxService := m.(awx.AWX)
 	id, err := strconv.Atoi(d.Id())
 	id, diags := convertStateIDToNummeric(diagElementInventoryTitle, d)
 	if diags.HasError() {
@@ -138,8 +135,7 @@ func resourceInventoryRead(ctx context.Context, d *schema.ResourceData, m interf
 }
 
 func resourceInventoryDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.InventoriesService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric(diagElementInventoryTitle, d)
 	if diags.HasError() {
 		return diags

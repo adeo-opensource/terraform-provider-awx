@@ -83,8 +83,7 @@ func resourceHost() *schema.Resource {
 
 func resourceHostCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 
-	client := m.(*awx.AWX)
-	awxService := client.HostService
+	awxService := m.(awx.AWX)
 
 	result, err := awxService.CreateHost(map[string]interface{}{
 		"name":        d.Get("name").(string),
@@ -120,8 +119,7 @@ func resourceHostCreate(ctx context.Context, d *schema.ResourceData, m interface
 }
 
 func resourceHostUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.HostService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric(diagElementHostTitle, d)
 	if diags.HasError() {
 		return diags
@@ -160,8 +158,7 @@ func resourceHostUpdate(ctx context.Context, d *schema.ResourceData, m interface
 }
 
 func resourceHostRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.HostService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric(diagElementHostTitle, d)
 	if diags.HasError() {
 		return diags
@@ -175,8 +172,7 @@ func resourceHostRead(ctx context.Context, d *schema.ResourceData, m interface{}
 }
 
 func resourceHostDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.HostService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric(diagElementHostTitle, d)
 	if diags.HasError() {
 		return diags

@@ -77,6 +77,14 @@ func resourceWorkflowJobTemplateNode() *schema.Resource {
 				Type:     schema.TypeInt,
 				Required: true,
 			},
+			"project_id": {
+				Type:     schema.TypeInt,
+				Required: false,
+			},
+			"name": {
+				Type:     schema.TypeString,
+				Required: false,
+			},
 			//"success_nodes": &schema.Schema{
 			//	Type: schema.TypeList,
 			//	Elem: &schema.Schema{
@@ -123,8 +131,7 @@ func resourceWorkflowJobTemplateNode() *schema.Resource {
 
 func resourceWorkflowJobTemplateNodeCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateNodeService
+	awxService := m.(awx.AWX)
 
 	result, err := awxService.CreateWorkflowJobTemplateNode(map[string]interface{}{
 		"extra_data":            d.Get("extra_data").(string),
@@ -161,8 +168,7 @@ func resourceWorkflowJobTemplateNodeCreate(ctx context.Context, d *schema.Resour
 
 func resourceWorkflowJobTemplateNodeUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateNodeService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Update WorkflowJobTemplateNode", d)
 	if diags.HasError() {
 		return diags
@@ -206,8 +212,7 @@ func resourceWorkflowJobTemplateNodeUpdate(ctx context.Context, d *schema.Resour
 
 func resourceWorkflowJobTemplateNodeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateNodeService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Read WorkflowJobTemplateNode", d)
 	if diags.HasError() {
 		return diags
@@ -223,16 +228,15 @@ func resourceWorkflowJobTemplateNodeRead(ctx context.Context, d *schema.Resource
 }
 
 func resourceWorkflowJobTemplateNodeDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateNodeService
-	id, diags := convertStateIDToNummeric(diagElementHostTitle, d)
+	awxService := m.(awx.AWX)
+	id, diags := convertStateIDToNummeric("WorkflowJobTemplateNode", d)
 	if diags.HasError() {
 		return diags
 	}
 
 	if _, err := awxService.DeleteWorkflowJobTemplateNode(id); err != nil {
 		return buildDiagDeleteFail(
-			diagElementHostTitle,
+			"WorkflowJobTemplateNode",
 			fmt.Sprintf("id %v, got %s ",
 				id, err.Error()))
 	}

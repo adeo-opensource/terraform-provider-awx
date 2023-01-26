@@ -16,7 +16,7 @@ Example Usage
 
 ```hcl
 resource "awx_notification_template" "default" {
-    name            = "notification_template-test"
+    name            = "notification_template-runTestCase"
     organization_id = 1
     notification_type = "success"
 }
@@ -51,7 +51,7 @@ func resourceNotificationTemplate() *schema.Resource {
 				Required: true,
 			},
 			"organization_id": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Required: true,
 			},
 			"notification_type": {
@@ -73,8 +73,7 @@ func resourceNotificationTemplate() *schema.Resource {
 
 func resourceNotificationTemplateCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.NotificationTemplatesService
+	awxService := m.(awx.AWX)
 
 	notificationConfigurationStr := d.Get("notification_configuration").(string)
 	notificationConfigurationMap := make(map[string]interface{})
@@ -88,10 +87,10 @@ func resourceNotificationTemplateCreate(ctx context.Context, d *schema.ResourceD
 		return diags
 	}
 
-	result, err := awxService.Create(map[string]interface{}{
+	result, err := awxService.CreateNotificationTemplate(map[string]interface{}{
 		"name":                       d.Get("name").(string),
 		"description":                d.Get("description").(string),
-		"organization":               d.Get("organization_id").(string),
+		"organization":               d.Get("organization_id").(int),
 		"notification_type":          d.Get("notification_type").(string),
 		"notification_configuration": notificationConfigurationMap,
 	}, map[string]string{})
@@ -111,15 +110,14 @@ func resourceNotificationTemplateCreate(ctx context.Context, d *schema.ResourceD
 
 func resourceNotificationTemplateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.NotificationTemplatesService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Update NotificationTemplate", d)
 	if diags.HasError() {
 		return diags
 	}
 
 	params := make(map[string]string)
-	_, err := awxService.GetByID(id, params)
+	_, err := awxService.GetNotificationTemplateByID(id, params)
 	if err != nil {
 		return buildDiagNotFoundFail("notification_template", id, err)
 	}
@@ -136,10 +134,10 @@ func resourceNotificationTemplateUpdate(ctx context.Context, d *schema.ResourceD
 		return diags
 	}
 
-	_, err = awxService.Update(id, map[string]interface{}{
+	_, err = awxService.UpdateNotificationTemplate(id, map[string]interface{}{
 		"name":                       d.Get("name").(string),
 		"description":                d.Get("description").(string),
-		"organization":               d.Get("organization_id").(string),
+		"organization":               d.Get("organization_id").(int),
 		"notification_type":          d.Get("notification_type").(string),
 		"notification_configuration": notificationConfigurationMap,
 	}, map[string]string{})
@@ -157,14 +155,13 @@ func resourceNotificationTemplateUpdate(ctx context.Context, d *schema.ResourceD
 
 func resourceNotificationTemplateRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.NotificationTemplatesService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Read notification_template", d)
 	if diags.HasError() {
 		return diags
 	}
 
-	res, err := awxService.GetByID(id, make(map[string]string))
+	res, err := awxService.GetNotificationTemplateByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("notification_template", id, err)
 
@@ -174,16 +171,15 @@ func resourceNotificationTemplateRead(ctx context.Context, d *schema.ResourceDat
 }
 
 func resourceNotificationTemplateDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.NotificationTemplatesService
-	id, diags := convertStateIDToNummeric(diagElementHostTitle, d)
+	awxService := m.(awx.AWX)
+	id, diags := convertStateIDToNummeric(diagElementNotificationTemplateTitle, d)
 	if diags.HasError() {
 		return diags
 	}
 
-	if _, err := awxService.Delete(id); err != nil {
+	if _, err := awxService.DeleteNotificationTemplate(id); err != nil {
 		return buildDiagDeleteFail(
-			diagElementHostTitle,
+			diagElementNotificationTemplateTitle,
 			fmt.Sprintf("id %v, got %s ",
 				id, err.Error()))
 	}

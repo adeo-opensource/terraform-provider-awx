@@ -38,8 +38,6 @@ func resourceWorkflowJobTemplateNodeSuccess() *schema.Resource {
 }
 
 func resourceWorkflowJobTemplateNodeSuccessCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateNodeSuccessService
-	return createNodeForWorkflowJob(awxService, ctx, d, m)
+	awxService := m.(awx.AWX)
+	return createNodeForWorkflowJob(awxService, "success", ctx, d, m)
 }

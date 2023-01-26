@@ -1,20 +1,20 @@
 /*
 Use this data source to list execution environments.
 
-Example Usage
+# Example Usage
 
 ```hcl
 data "awx_execution_environment" "default" {}
 
-data "awx_execution_environment" "default" {
-    name = "Default"
-}
+	data "awx_execution_environment" "default" {
+	    name = "Default"
+	}
 
-data "awx_execution_environment" "default" {
-    id = 1
-}
+	data "awx_execution_environment" "default" {
+	    id = 1
+	}
+
 ```
-
 */
 package awx
 
@@ -41,13 +41,29 @@ func dataSourceExecutionEnvironment() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"image": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"description": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"organization": {
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"credential": {
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 		},
 	}
 }
 
 func dataSourceExecutionEnvironmentsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	params := make(map[string]string)
 	if groupName, okName := d.GetOk("name"); okName {
 		params["name"] = groupName.(string)
@@ -57,7 +73,7 @@ func dataSourceExecutionEnvironmentsRead(ctx context.Context, d *schema.Resource
 		params["id"] = strconv.Itoa(groupID.(int))
 	}
 
-	executionEnvironments, _, err := client.ExecutionEnvironmentsService.ListExecutionEnvironments(params)
+	executionEnvironments, _, err := client.ListExecutionEnvironments(params)
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Get: Fail to fetch execution environment",

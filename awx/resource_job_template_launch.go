@@ -51,21 +51,30 @@ func resourceJobTemplateLaunch() *schema.Resource {
 				Description: "Job template ID",
 				ForceNew:    true,
 			},
+			"name": {
+				Type:        schema.TypeString,
+				Required:    false,
+				Description: "Job name",
+			},
+			"project_id": {
+				Type:        schema.TypeInt,
+				Required:    false,
+				Description: "Project ID",
+			},
 		},
 	}
 }
 
 func resourceJobTemplateLaunchCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.JobTemplateService
+	awxService := m.(awx.AWX)
 	jobTemplateID := d.Get("job_template_id").(int)
 	_, err := awxService.GetJobTemplateByID(jobTemplateID, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("job template", jobTemplateID, err)
 	}
 
-	res, err := awxService.Launch(jobTemplateID, map[string]interface{}{}, map[string]string{})
+	res, err := awxService.LaunchJob(jobTemplateID, map[string]interface{}{}, map[string]string{})
 	if err != nil {
 		log.Printf("Failed to create Template Launch %v", err)
 		diags = append(diags, diag.Diagnostic{
@@ -88,8 +97,7 @@ func resourceJobRead(ctx context.Context, d *schema.ResourceData, m interface{})
 
 func resourceJobDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.JobService
+	awxService := m.(awx.AWX)
 	jobID, diags := convertStateIDToNummeric("Delete Job", d)
 	_, err := awxService.GetJob(jobID, map[string]string{})
 	if err != nil {

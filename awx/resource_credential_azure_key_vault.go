@@ -5,7 +5,7 @@ Example Usage
 
 ```hcl
 resource "awx_credential_azure_key_vault" "default" {
-    name                = "acc-test"
+    name                = "acc-runTestCase"
     organization_id     = 1
     url                 = "..."
     client              = "..."
@@ -83,8 +83,8 @@ func resourceCredentialAzureKeyVaultCreate(ctx context.Context, d *schema.Resour
 		},
 	}
 
-	client := m.(*awx.AWX)
-	cred, err := client.CredentialsService.CreateCredentials(newCredential, map[string]string{})
+	client := m.(awx.AWX)
+	cred, err := client.CreateCredentials(newCredential, map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -103,9 +103,9 @@ func resourceCredentialAzureKeyVaultCreate(ctx context.Context, d *schema.Resour
 func resourceCredentialAzureKeyVaultRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	id, _ := strconv.Atoi(d.Id())
-	cred, err := client.CredentialsService.GetCredentialsByID(id, map[string]string{})
+	cred, err := client.GetCredentialsByID(id, map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -155,8 +155,8 @@ func resourceCredentialAzureKeyVaultUpdate(ctx context.Context, d *schema.Resour
 			},
 		}
 
-		client := m.(*awx.AWX)
-		_, err = client.CredentialsService.UpdateCredentialsByID(id, updatedCredential, map[string]string{})
+		client := m.(awx.AWX)
+		_, err = client.UpdateCredentialsByID(id, updatedCredential, map[string]string{})
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,

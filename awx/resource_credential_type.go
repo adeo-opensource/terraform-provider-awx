@@ -5,7 +5,7 @@ Example Usage
 
 ```hcl
 resource "awx_credential_type" "default" {
-    name      = "acc-test"
+    name      = "acc-runTestCase"
     injectors = <<YAML
 ...
 YAML
@@ -101,8 +101,8 @@ func resourceCredentialTypeCreate(ctx context.Context, d *schema.ResourceData, m
 		"injectors":   injectors_map,
 	}
 
-	client := m.(*awx.AWX)
-	credtype, err := client.CredentialTypeService.CreateCredentialType(newCredentialType, map[string]string{})
+	client := m.(awx.AWX)
+	credtype, err := client.CreateCredentialType(newCredentialType, map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -121,9 +121,9 @@ func resourceCredentialTypeCreate(ctx context.Context, d *schema.ResourceData, m
 func resourceCredentialTypeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	id, _ := strconv.Atoi(d.Id())
-	credtype, err := client.CredentialTypeService.GetCredentialTypeByID(id, map[string]string{})
+	credtype, err := client.GetCredentialTypeByID(id, map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -189,8 +189,8 @@ func resourceCredentialTypeUpdate(ctx context.Context, d *schema.ResourceData, m
 			"injectors":   injectors_map,
 		}
 
-		client := m.(*awx.AWX)
-		_, err = client.CredentialTypeService.UpdateCredentialTypeByID(id, updatedCredentialType, map[string]string{})
+		client := m.(awx.AWX)
+		_, err = client.UpdateCredentialTypeByID(id, updatedCredentialType, map[string]string{})
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,

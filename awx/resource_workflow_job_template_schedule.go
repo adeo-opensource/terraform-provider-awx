@@ -8,7 +8,7 @@ Example Usage
 ```hcl
 resource "awx_workflow_job_template_schedule" "default" {
     workflow_job_template_id     = data.awx_workflow_job_template.default.id
-    name                        = "schedule-test"
+    name                        = "schedule-runTestCase"
     rrule                       = "DTSTART;TZID=Europe/Paris:20211214T120000 RRULE:INTERVAL=1;FREQ=DAILY"
 }
 ```
@@ -72,8 +72,7 @@ func resourceWorkflowJobTemplateSchedule() *schema.Resource {
 
 func resourceWorkflowJobTemplateScheduleCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateScheduleService
+	awxService := m.(awx.AWX)
 
 	workflowJobTemplateID := d.Get("workflow_job_template_id").(int)
 

@@ -47,8 +47,7 @@ func resourceJobTemplateCredentials() *schema.Resource {
 
 func resourceJobTemplateCredentialsCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.JobTemplateService
+	awxService := m.(awx.AWX)
 	jobTemplateID := d.Get("job_template_id").(int)
 	_, err := awxService.GetJobTemplateByID(jobTemplateID, make(map[string]string))
 	if err != nil {
@@ -74,8 +73,7 @@ func resourceJobTemplateCredentialsRead(ctx context.Context, d *schema.ResourceD
 
 func resourceJobTemplateCredentialsDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.JobTemplateService
+	awxService := m.(awx.AWX)
 	jobTemplateID := d.Get("job_template_id").(int)
 	res, err := awxService.GetJobTemplateByID(jobTemplateID, make(map[string]string))
 	if err != nil {

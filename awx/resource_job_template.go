@@ -212,8 +212,7 @@ func resourceJobTemplate() *schema.Resource {
 
 func resourceJobTemplateCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.JobTemplateService
+	awxService := m.(awx.AWX)
 
 	result, err := awxService.CreateJobTemplate(map[string]interface{}{
 		"name":                     d.Get("name").(string),
@@ -265,8 +264,8 @@ func resourceJobTemplateCreate(ctx context.Context, d *schema.ResourceData, m in
 
 func resourceJobTemplateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.JobTemplateService
+	awxService := m.(awx.AWX)
+
 	id, diags := convertStateIDToNummeric("Update JobTemplate", d)
 	if diags.HasError() {
 		return diags
@@ -326,8 +325,8 @@ func resourceJobTemplateUpdate(ctx context.Context, d *schema.ResourceData, m in
 
 func resourceJobTemplateRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.JobTemplateService
+	awxService := m.(awx.AWX)
+
 	id, diags := convertStateIDToNummeric("Read JobTemplate", d)
 	if diags.HasError() {
 		return diags

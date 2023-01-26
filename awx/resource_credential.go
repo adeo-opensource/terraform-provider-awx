@@ -5,7 +5,7 @@ Example Usage
 
 ```hcl
 resource "awx_credential" "default" {
-    name                = "acc-test"
+    name                = "acc-runTestCase"
     organization_id     = 1
     credential_type_id  = 1
     inputs              = <<YAML
@@ -87,8 +87,8 @@ func resourceCredentialCreate(ctx context.Context, d *schema.ResourceData, m int
 		"inputs":          inputs_map,
 	}
 
-	client := m.(*awx.AWX)
-	cred, err := client.CredentialsService.CreateCredentials(newCredential, map[string]string{})
+	client := m.(awx.AWX)
+	cred, err := client.CreateCredentials(newCredential, map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -107,9 +107,9 @@ func resourceCredentialCreate(ctx context.Context, d *schema.ResourceData, m int
 func resourceCredentialRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	id, _ := strconv.Atoi(d.Id())
-	cred, err := client.CredentialsService.GetCredentialsByID(id, map[string]string{})
+	cred, err := client.GetCredentialsByID(id, map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -147,8 +147,8 @@ func resourceCredentialUpdate(ctx context.Context, d *schema.ResourceData, m int
 		if jsonerr != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
-				Summary:  "Unable to create new credential",
-				Detail:   fmt.Sprintf("Unable to create new credential: %s", jsonerr.Error()),
+				Summary:  "Unable to update existing credentials",
+				Detail:   fmt.Sprintf("Unable to update existing credentials: %s", jsonerr.Error()),
 			})
 			return diags
 		}
@@ -162,8 +162,8 @@ func resourceCredentialUpdate(ctx context.Context, d *schema.ResourceData, m int
 			"inputs":          inputs_map,
 		}
 
-		client := m.(*awx.AWX)
-		_, err = client.CredentialsService.UpdateCredentialsByID(id, updatedCredential, map[string]string{})
+		client := m.(awx.AWX)
+		_, err = client.UpdateCredentialsByID(id, updatedCredential, map[string]string{})
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
@@ -174,5 +174,5 @@ func resourceCredentialUpdate(ctx context.Context, d *schema.ResourceData, m int
 		}
 	}
 
-	return resourceCredentialSCMRead(ctx, d, m)
+	return resourceCredentialRead(ctx, d, m)
 }

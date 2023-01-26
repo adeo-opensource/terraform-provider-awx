@@ -37,7 +37,6 @@ func resourceWorkflowJobTemplateNodeAlways() *schema.Resource {
 	}
 }
 func resourceWorkflowJobTemplateNodeAlwaysCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateNodeAlwaysService
-	return createNodeForWorkflowJob(awxService, ctx, d, m)
+	awxService := m.(awx.AWX)
+	return createNodeForWorkflowJob(awxService, "always", ctx, d, m)
 }

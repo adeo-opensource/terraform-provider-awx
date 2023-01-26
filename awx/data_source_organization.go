@@ -1,20 +1,20 @@
 /*
 Use this data source to list organizations.
 
-Example Usage
+# Example Usage
 
 ```hcl
 data "awx_organization" "default" {}
 
-data "awx_organization" "default" {
-    name = "Default"
-}
+	data "awx_organization" "default" {
+	    name = "Default"
+	}
 
-data "awx_organization" "default" {
-    id = 1
-}
+	data "awx_organization" "default" {
+	    id = 1
+	}
+
 ```
-
 */
 package awx
 
@@ -48,7 +48,7 @@ func dataSourceOrganization() *schema.Resource {
 
 func dataSourceOrganizationRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	params := make(map[string]string)
 	if groupName, okName := d.GetOk("name"); okName {
 		params["name"] = groupName.(string)
@@ -58,7 +58,7 @@ func dataSourceOrganizationRead(ctx context.Context, d *schema.ResourceData, m i
 		params["id"] = strconv.Itoa(groupID.(int))
 	}
 
-	organizations, err := client.OrganizationsService.ListOrganizations(params)
+	organizations, err := client.ListOrganizations(params)
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Get: Fail to fetch organization",

@@ -5,7 +5,7 @@ Example Usage
 
 ```hcl
 resource "awx_inventory_source" "default" {
-    name                = "acc-test"
+    name                = "acc-runTestCase"
     inventory_id        = 1
     update_on_launch    = true
     source_project_id   = 1
@@ -128,8 +128,7 @@ func resourceInventorySource() *schema.Resource {
 }
 
 func resourceInventorySourceCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.InventorySourcesService
+	awxService := m.(awx.AWX)
 
 	result, err := awxService.CreateInventorySource(map[string]interface{}{
 		"name":                 d.Get("name").(string),
@@ -164,8 +163,8 @@ func resourceInventorySourceCreate(ctx context.Context, d *schema.ResourceData, 
 }
 
 func resourceInventorySourceUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.InventorySourcesService
+	awxService := m.(awx.AWX)
+
 	id, diags := convertStateIDToNummeric(diagElementInventorySourceTitle, d)
 	if diags.HasError() {
 		return diags
@@ -202,16 +201,16 @@ func resourceInventorySourceUpdate(ctx context.Context, d *schema.ResourceData, 
 }
 
 func resourceInventorySourceDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.InventorySourcesService
+	awxService := m.(awx.AWX)
+
 	id, diags := convertStateIDToNummeric(diagElementInventorySourceTitle, d)
 	if diags.HasError() {
 		return diags
 	}
 	if _, err := awxService.DeleteInventorySource(id); err != nil {
 		return buildDiagDeleteFail(
-			"inventroy source",
-			fmt.Sprintf("inventroy source %v, got %s ",
+			"Inventory Source",
+			fmt.Sprintf("Inventory Source %v, got %s ",
 				id, err.Error()))
 	}
 	d.SetId("")
@@ -219,8 +218,8 @@ func resourceInventorySourceDelete(ctx context.Context, d *schema.ResourceData, 
 }
 
 func resourceInventorySourceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.InventorySourcesService
+	awxService := m.(awx.AWX)
+
 	id, diags := convertStateIDToNummeric(diagElementInventorySourceTitle, d)
 	if diags.HasError() {
 		return diags

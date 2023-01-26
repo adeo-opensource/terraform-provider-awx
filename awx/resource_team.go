@@ -89,8 +89,7 @@ func resourceTeam() *schema.Resource {
 							Required: true,
 						},
 					},
-				},
-			},
+				}},
 		},
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
@@ -105,8 +104,7 @@ func resourceTeam() *schema.Resource {
 }
 
 func resourceTeamCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.TeamService
+	awxService := m.(awx.AWX)
 
 	orgID := d.Get("organization_id").(int)
 	teamName := d.Get("name").(string)
@@ -148,8 +146,7 @@ func resourceTeamCreate(ctx context.Context, d *schema.ResourceData, m interface
 }
 
 func roleEntitlementUpdate(m interface{}, team_id int, roles []interface{}, remove bool) error {
-	client := m.(*awx.AWX)
-	awxService := client.TeamService
+	awxService := m.(awx.AWX)
 
 	for _, v := range roles {
 		emap := v.(map[string]interface{})
@@ -169,8 +166,7 @@ func roleEntitlementUpdate(m interface{}, team_id int, roles []interface{}, remo
 }
 
 func resourceTeamUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.TeamService
+	awxService := m.(awx.AWX)
 
 	id, diags := convertStateIDToNummeric("Update Team", d)
 	if diags.HasError() {
@@ -220,8 +216,7 @@ func resourceTeamUpdate(ctx context.Context, d *schema.ResourceData, m interface
 
 func resourceTeamRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.TeamService
+	awxService := m.(awx.AWX)
 
 	id, diags := convertStateIDToNummeric("Read Team", d)
 	if diags.HasError() {
@@ -244,8 +239,7 @@ func resourceTeamRead(ctx context.Context, d *schema.ResourceData, m interface{}
 func resourceTeamDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 	digMessagePart := "Team"
-	client := m.(*awx.AWX)
-	awxService := client.TeamService
+	awxService := m.(awx.AWX)
 
 	id, diags := convertStateIDToNummeric("Delete Team", d)
 	if diags.HasError() {

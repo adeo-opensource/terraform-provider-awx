@@ -5,7 +5,7 @@ Example Usage
 
 ```hcl
 resource "awx_execution_environment" "default" {
-    name  = "acc-test"
+    name  = "acc-runTestCase"
     image = "..."
 }
 ```
@@ -62,8 +62,7 @@ func resourceExecutionEnvironment() *schema.Resource {
 
 func resourceExecutionEnvironmentsCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.ExecutionEnvironmentsService
+	awxService := m.(awx.AWX)
 
 	result, err := awxService.CreateExecutionEnvironment(map[string]interface{}{
 		"name":         d.Get("name").(string),
@@ -88,8 +87,7 @@ func resourceExecutionEnvironmentsCreate(ctx context.Context, d *schema.Resource
 
 func resourceExecutionEnvironmentsUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.ExecutionEnvironmentsService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Update ExecutionEnvironments", d)
 	if diags.HasError() {
 		return diags
@@ -123,8 +121,7 @@ func resourceExecutionEnvironmentsUpdate(ctx context.Context, d *schema.Resource
 
 func resourceExecutionEnvironmentsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.ExecutionEnvironmentsService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Read ExecutionEnvironments", d)
 	if diags.HasError() {
 		return diags
@@ -142,8 +139,7 @@ func resourceExecutionEnvironmentsRead(ctx context.Context, d *schema.ResourceDa
 func resourceExecutionEnvironmentsDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 	digMessagePart := "ExecutionEnvironment"
-	client := m.(*awx.AWX)
-	awxService := client.ExecutionEnvironmentsService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Delete ExecutionEnvironment", d)
 	if diags.HasError() {
 		return diags

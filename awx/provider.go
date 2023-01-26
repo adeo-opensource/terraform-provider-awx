@@ -118,7 +118,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		client.Transport = customTransport
 	}
 
-	var c *awx.AWX
+	var c awx.AWX
 	var err error
 	if token != "" {
 		c, err = awx.NewAWXToken(hostname, token, client)

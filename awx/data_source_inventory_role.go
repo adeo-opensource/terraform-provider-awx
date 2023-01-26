@@ -1,20 +1,21 @@
 /*
 Use this data source to list inventory roles for a specified inventory.
 
-Example Usage
+# Example Usage
 
 ```hcl
-data "awx_inventory" "myinv" {
-    name = "My Inventory"
-  ...
-}
 
-data "awx_inventory_role" "inv_admin_role" {
-    name         = "Admin"
-    inventory_id = data.awx_inventory.myinv.id
-}
+	data "awx_inventory" "myinv" {
+	    name = "My Inventory"
+	  ...
+	}
+
+	data "awx_inventory_role" "inv_admin_role" {
+	    name         = "Admin"
+	    inventory_id = data.awx_inventory.myinv.id
+	}
+
 ```
-
 */
 package awx
 
@@ -51,7 +52,7 @@ func dataSourceInventoryRole() *schema.Resource {
 
 func dataSourceInventoryRoleRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	params := make(map[string]string)
 
 	inventoryId := d.Get("inventory_id").(int)
@@ -64,7 +65,7 @@ func dataSourceInventoryRoleRead(ctx context.Context, d *schema.ResourceData, m 
 		return diags
 	}
 
-	inventory, err := client.InventoriesService.GetInventoryByID(inventoryId, params)
+	inventory, err := client.GetInventoryByID(inventoryId, params)
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Get: Fail to fetch Inventory",

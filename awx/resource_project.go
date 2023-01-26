@@ -118,8 +118,7 @@ func resourceProject() *schema.Resource {
 }
 
 func resourceProjectCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.ProjectService
+	awxService := m.(awx.AWX)
 
 	orgID := d.Get("organization_id").(int)
 	projectName := d.Get("name").(string)
@@ -162,8 +161,7 @@ func resourceProjectCreate(ctx context.Context, d *schema.ResourceData, m interf
 }
 
 func resourceProjectUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.ProjectService
+	awxService := m.(awx.AWX)
 
 	id, diags := convertStateIDToNummeric("Update Project", d)
 	if diags.HasError() {
@@ -202,8 +200,7 @@ func resourceProjectUpdate(ctx context.Context, d *schema.ResourceData, m interf
 
 func resourceProjectRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.ProjectService
+	awxService := m.(awx.AWX)
 
 	id, diags := convertStateIDToNummeric("Read Project", d)
 	if diags.HasError() {
@@ -221,8 +218,7 @@ func resourceProjectRead(ctx context.Context, d *schema.ResourceData, m interfac
 func resourceProjectDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 	digMessagePart := "Project"
-	client := m.(*awx.AWX)
-	awxService := client.ProjectService
+	awxService := m.(awx.AWX)
 	var jobID int
 	var finished time.Time
 	id, diags := convertStateIDToNummeric("Delete Project", d)
@@ -242,18 +238,18 @@ func resourceProjectDelete(ctx context.Context, d *schema.ResourceData, m interf
 		jobID = int(res.SummaryFields.LastJob["id"].(float64))
 	}
 	if jobID != 0 {
-		_, err = client.ProjectUpdatesService.ProjectUpdateCancel(jobID)
+		_, err = awxService.ProjectUpdateCancel(jobID)
 		if err != nil {
 			return buildDiagnosticsMessage(
-				"Delete: Fail to canel Job",
-				"Fail to canel the Job %v for Project with ID %v, got %s",
+				"Delete: Fail to cancel Job",
+				"Fail to cancel the Job %v for Project with ID %v, got %s",
 				jobID, id, err.Error(),
 			)
 		}
 	}
 	// check if finished is 0
 	for finished.IsZero() {
-		prj, _ := client.ProjectUpdatesService.ProjectUpdateGet(jobID)
+		prj, _ := awxService.ProjectUpdateGet(jobID)
 		finished = prj.Finished
 		time.Sleep(1 * time.Second)
 	}

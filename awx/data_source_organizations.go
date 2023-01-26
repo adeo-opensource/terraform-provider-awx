@@ -1,12 +1,11 @@
 /*
 Use this data source to list organizations.
 
-Example Usage
+# Example Usage
 
 ```hcl
 data "awx_organizations" "all_orgs" {}
 ```
-
 */
 package awx
 
@@ -38,19 +37,18 @@ func dataSourceOrganizations() *schema.Resource {
 							Computed: true,
 						},
 					},
-				},
-			},
+				}},
 		},
 	}
 }
 
 func dataSourceOrganizationsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 
 	parsedOrgs := make([]map[string]interface{}, 0)
 
-	orgs, err := client.OrganizationsService.ListOrganizations(map[string]string{})
+	orgs, err := client.ListOrganizations(map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,

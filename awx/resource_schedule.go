@@ -9,7 +9,7 @@ Example Usage
 data
 
 resource "awx_schedule" "default" {
-    name                      = "schedule-test"
+    name                      = "schedule-runTestCase"
     unified_job_template_id    = data.awx_job_template.baseconfig.id
     rrule                     = "DTSTART;TZID=Europe/Paris:20211214T120000 RRULE:INTERVAL=1;FREQ=DAILY"
 }
@@ -69,10 +69,9 @@ func resourceSchedule() *schema.Resource {
 
 func resourceScheduleCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.ScheduleService
+	awxService := m.(awx.AWX)
 
-	result, err := awxService.Create(map[string]interface{}{
+	result, err := awxService.CreateSchedule(map[string]interface{}{
 		"name":                 d.Get("name").(string),
 		"rrule":                d.Get("rrule").(string),
 		"unified_job_template": d.Get("unified_job_template_id").(int),
@@ -96,20 +95,19 @@ func resourceScheduleCreate(ctx context.Context, d *schema.ResourceData, m inter
 
 func resourceScheduleUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.ScheduleService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Update Schedule", d)
 	if diags.HasError() {
 		return diags
 	}
 
 	params := make(map[string]string)
-	_, err := awxService.GetByID(id, params)
+	_, err := awxService.GetScheduleByID(id, params)
 	if err != nil {
 		return buildDiagNotFoundFail("schedule", id, err)
 	}
 
-	_, err = awxService.Update(id, map[string]interface{}{
+	_, err = awxService.UpdateSchedule(id, map[string]interface{}{
 		"name":                 d.Get("name").(string),
 		"rrule":                d.Get("rrule").(string),
 		"unified_job_template": d.Get("unified_job_template_id").(int),
@@ -131,14 +129,13 @@ func resourceScheduleUpdate(ctx context.Context, d *schema.ResourceData, m inter
 
 func resourceScheduleRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.ScheduleService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Read schedule", d)
 	if diags.HasError() {
 		return diags
 	}
 
-	res, err := awxService.GetByID(id, make(map[string]string))
+	res, err := awxService.GetScheduleByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("schedule", id, err)
 
@@ -148,16 +145,15 @@ func resourceScheduleRead(ctx context.Context, d *schema.ResourceData, m interfa
 }
 
 func resourceScheduleDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.ScheduleService
-	id, diags := convertStateIDToNummeric(diagElementHostTitle, d)
+	awxService := m.(awx.AWX)
+	id, diags := convertStateIDToNummeric(diagElementScheduleTitle, d)
 	if diags.HasError() {
 		return diags
 	}
 
-	if _, err := awxService.Delete(id); err != nil {
+	if _, err := awxService.DeleteSchedule(id); err != nil {
 		return buildDiagDeleteFail(
-			diagElementHostTitle,
+			diagElementScheduleTitle,
 			fmt.Sprintf("id %v, got %s ",
 				id, err.Error()))
 	}

@@ -1,20 +1,20 @@
 /*
 Use this data source to list schedules.
 
-Example Usage
+# Example Usage
 
 ```hcl
 data "awx_schedule" "default" {}
 
-data "awx_schedule" "default" {
-    name = "private_services"
-}
+	data "awx_schedule" "default" {
+	    name = "private_services"
+	}
 
-data "awx_schedule" "default" {
-    id = 1
-}
+	data "awx_schedule" "default" {
+	    id = 1
+	}
+
 ```
-
 */
 package awx
 
@@ -47,7 +47,7 @@ func dataSourceSchedule() *schema.Resource {
 
 func dataSourceSchedulesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	params := make(map[string]string)
 	if groupName, okName := d.GetOk("name"); okName {
 		params["name"] = groupName.(string)
@@ -57,7 +57,7 @@ func dataSourceSchedulesRead(ctx context.Context, d *schema.ResourceData, m inte
 		params["id"] = strconv.Itoa(groupID.(int))
 	}
 
-	schedules, _, err := client.ScheduleService.List(params)
+	schedules, _, err := client.ListSchedule(params)
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Get: Fail to fetch Schedule Group",
