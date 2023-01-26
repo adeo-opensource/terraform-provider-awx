@@ -21,7 +21,7 @@ There are environment variables that allow you to authenticate yourself:
 
 ## Example Usage
 
-```
+```terraform
 # It is strongly recommended to configure this provider through the
 # environment variables described above.
 provider "awx" {}
@@ -29,17 +29,17 @@ provider "awx" {}
 
 ### Basic auth usage
 
-```
+```terraform
 provider "awx" {
   hostname = "https://my-awx"
   username = "test"
-  password = "changeme"
+  password = "changeme" # pragma: allowlist secret
 }
 ```
 
 ### Token usage
 
-```
+```terraform
 provider "awx" {
   hostname = "https://my-awx"
   token = "test"
@@ -60,7 +60,7 @@ Project is under Apache 2.0 license. See [License](LICENSE) file for more inform
 
 ## Contributors ✨
 
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+Thanks goes to these wonderful people ([emoji key][all-contributors-emoji-url]):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -71,4 +71,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+This project follows the [all-contributors][all-contributors-url] specification.  
+Contributions of any kind welcome!
+
+
+[all-contributors-url]: https://github.com/all-contributors/all-contributors
+[all-contributors-emoji-url]: https://allcontributors.org/docs/en/emoji-key
