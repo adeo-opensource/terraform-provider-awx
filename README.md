@@ -50,6 +50,11 @@ provider "awx" {
 
 [Learn about how to contribute](CONTRIBUTING.md)
 
+## Where to ask Questions?
+
+Questions can be asked in form of issues in this repository:
+[Open an issue][open-issue]
+
 ## Changelog 
 
 [Learn about the latest improvements](CHANGELOG.md)
@@ -77,3 +82,4 @@ Contributions of any kind welcome!
 
 [all-contributors-url]: https://github.com/all-contributors/all-contributors
 [all-contributors-emoji-url]: https://allcontributors.org/docs/en/emoji-key
+[open-issue]: https://github.com/adeo-opensource/terraform-provider-awx/issues/new/choose
