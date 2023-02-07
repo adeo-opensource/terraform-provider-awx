@@ -1,34 +1,34 @@
 # How to contribute
 
-If you would like to help us and contribute to this project, we would be happy to do so. 
-However, some rules are to be followed in order to keep a maximum of coherence and stability within repo.  
+If you would like to help us and contribute to this project, you are very welcome!
+However, some rules must be respected in order to keep a maximum of consistency and stability within the repo.  
 
-## Know before submitting code
+## Things to know before submitting code
 
 ### Good practices
 
-* All code submissions are done through pull requests against the main branch
-* [Create an issue][open-issue] (pull request or bug report) before submit your pull request
+* All code submission are done through pull requests against the main branch
+* [Create an issue][open-issue] (pull request or bug report) before submitting your pull request
 * [Associate issue and pull request][link-pr-with-issue]
 
 ### Pre commit hooks
 
-When you attempt to perform a git commit there will be a pre-commit hook that gets run before the commit is allowed to your local repository.
+When attempting to perform a git commit, a pre-commit hook is executed before the commit is allowed in your local repository.
 
 ## Submit Pull requests
 
-Fixes and features for will go through the GitHub pull request process. 
+Fixes and features will go through the GitHub pull request process. 
 Submit your pull request (PR) against the `main` branch.
 
 Before submitting your pull request, make sure you validate the style and tests. 
 To do this, install the prerequisites, see [DEVELOPERS](DEVELOPERS.md) documentation. 
-The pre-commits will be played and tests will be played during the push.
+The pre-commit and tests are played during the push.
 
 * Write tests for new features and update/add tests for bug fixes.
 * Make the smallest possible change per pull request
 * Write good validation messages. [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/)
 
-## Reporting Issues
+## Reporting issues
 
 Use the GitHub issue tracker for filing bugs. 
 In order to save time, and help us respond to issue quickly, make sure to fill out as much of the issue template as possible. 
