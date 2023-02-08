@@ -4,17 +4,7 @@
   ],
   "imageSize": 100,
   "commit": false,
-  "contributors": [
-    {
-      "login": "EmmanuelDemey",
-      "name": "Emmanuel DEMEY",
-      "avatar_url": "https://avatars.githubusercontent.com/u/555768?v=4",
-      "profile": "http://gillespie59.github.io/",
-      "contributions": [
-        "code"
-      ]
-    }
-  ],
+  "contributors": [],
   "contributorsPerLine": 7,
   "projectName": "template-opensource",
   "projectOwner": "adeo-opensource",

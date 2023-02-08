@@ -1,53 +1,85 @@
-# template-opensource
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
+# terraform-provider-awx
+
+[![All Contributors](https://img.shields.io/github/all-contributors/adeo-opensource/terraform-provider-awx?style=flat&label=Contributors&color=informational)](#contributors)
 
 ## Description
 
-## Prerequisite
+The AWX provider allow Terraform to read from, write to, and configure AWX.
 
-## Getting Started
+## Roadmap
 
-## Documentation
+[Resources managed by the provider](ROADMAP.md)
 
-## Built Using
+## AWX authentication configuration options
 
-* [Techno1](https://www.leroymerlin.fr/)
-* [Techno2](https://www.leroymerlin.fr/)
-* [Techno3](https://www.leroymerlin.fr/)
+There are environment variables that allow you to authenticate yourself:
+
+* AWX_HOSTNAME
+* AWX_USERNAME
+* AWX_PASSWORD
+* AWX_TOKEN
+
+## Example Usage
+
+```terraform
+# It is strongly recommended to configure this provider through the
+# environment variables described above.
+provider "awx" {}
+```
+
+### Basic auth usage
+
+```terraform
+provider "awx" {
+  hostname = "https://my-awx"
+  username = "test"
+  password = "changeme" # pragma: allowlist secret
+}
+```
+
+### Token usage
+
+```terraform
+provider "awx" {
+  hostname = "https://my-awx"
+  token = "test"
+}
+```
 
 ## How to contribute? 
 
-## Ecosystem
+[Learn about how to contribute](CONTRIBUTING.md)
+
+## Where to ask Questions?
+
+Questions can be asked in form of issues in this repository:
+[Open an issue][open-issue]
 
 ## Changelog 
 
-[Learn about the latest improvements](changelog)
+[Learn about the latest improvements](CHANGELOG.md)
 
-## Stay in touch
-
-* [Slack](https://www.leroymerlin.fr/)
-* [Discord](https://www.leroymerlin.fr/)
-* [Twitter](https://www.leroymerlin.fr/)
 ## License
+
+Project is under Apache 2.0 license. See [License](LICENSE) file for more information.
 
 ## Contributors ✨
 
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+Thanks goes to these wonderful people ([emoji key][all-contributors-emoji-url]):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
-<table>
-  <tr>
-    <td align="center"><a href="http://gillespie59.github.io/"><img src="https://avatars.githubusercontent.com/u/555768?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Emmanuel DEMEY</b></sub></a><br /><a href="https://github.com/adeo-opensource/template-opensource/commits?author=EmmanuelDemey" title="Code">💻</a></td>
-  </tr>
-</table>
 
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+This project follows the [all-contributors][all-contributors-url] specification.  
+Contributions of any kind welcome!
+
+
+[all-contributors-url]: https://github.com/all-contributors/all-contributors
+[all-contributors-emoji-url]: https://allcontributors.org/docs/en/emoji-key
+[open-issue]: https://github.com/adeo-opensource/terraform-provider-awx/issues/new/choose
