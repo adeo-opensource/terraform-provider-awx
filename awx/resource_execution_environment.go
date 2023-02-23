@@ -77,7 +77,7 @@ func resourceExecutionEnvironmentsCreate(ctx context.Context, d *schema.Resource
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
 			Summary:  "Unable to create ExecutionEnvironments",
-			Detail:   fmt.Sprintf("ExecutionEnvironments with name, failed to create %s", d.Get("name").(string), err.Error()),
+			Detail:   fmt.Sprintf("ExecutionEnvironments with name, failed to create %s", d.Get("name").(string)),
 		})
 		return diags
 	}

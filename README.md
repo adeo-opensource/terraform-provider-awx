@@ -2,6 +2,10 @@
 
 [![All Contributors](https://img.shields.io/github/all-contributors/adeo-opensource/terraform-provider-awx?style=flat&label=Contributors&color=informational)](#contributors)
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=adeo-opensource_terraform-provider-awx&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=adeo-opensource_terraform-provider-awx)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=adeo-opensource_terraform-provider-awx&metric=coverage)](https://sonarcloud.io/summary/new_code?id=adeo-opensource_terraform-provider-awx)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=adeo-opensource_terraform-provider-awx&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=adeo-opensource_terraform-provider-awx)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=adeo-opensource_terraform-provider-awx&metric=bugs)](https://sonarcloud.io/summary/new_code?id=adeo-opensource_terraform-provider-awx)
 ## Description
 
 The AWX provider allow Terraform to read from, write to, and configure AWX.
