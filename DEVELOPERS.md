@@ -45,7 +45,7 @@ go test ./test -count=1
 ```terraform
 terraform {
   required_providers {
-    zabbix = {
+    awx = {
       source  = "github.com/adeo-opensource/awx"
       version = "0.1"
     }

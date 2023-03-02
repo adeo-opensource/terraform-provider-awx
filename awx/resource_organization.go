@@ -55,7 +55,6 @@ func resourceOrganization() *schema.Resource {
 			},
 			"project_id": {
 				Type:     schema.TypeInt,
-				Required: false,
 				Optional: true,
 			},
 		},

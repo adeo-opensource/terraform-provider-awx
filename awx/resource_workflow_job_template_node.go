@@ -79,11 +79,11 @@ func resourceWorkflowJobTemplateNode() *schema.Resource {
 			},
 			"project_id": {
 				Type:     schema.TypeInt,
-				Required: false,
+				Optional: true,
 			},
 			"name": {
 				Type:     schema.TypeString,
-				Required: false,
+				Optional: true,
 			},
 			//"success_nodes": &schema.Schema{
 			//	Type: schema.TypeList,

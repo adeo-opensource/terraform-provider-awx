@@ -51,16 +51,6 @@ func resourceJobTemplateLaunch() *schema.Resource {
 				Description: "Job template ID",
 				ForceNew:    true,
 			},
-			"name": {
-				Type:        schema.TypeString,
-				Required:    false,
-				Description: "Job name",
-			},
-			"project_id": {
-				Type:        schema.TypeInt,
-				Required:    false,
-				Description: "Project ID",
-			},
 		},
 	}
 }
