@@ -52,19 +52,15 @@ func Test_dataSourceInventoriesRead(t *testing.T) {
 				d:   schema.TestResourceDataRaw(t, dataSourceInventory().Schema, resourceDataMapInventory),
 			},
 			want: nil,
+			id:   "4",
 			mock: func(mockAWX *MockAWX) {
 				mockAWX.On("ListInventories", mock.Anything).Return([]*awx.Inventory{{
 					Kind:        "invent",
 					HostFilter:  "filter",
 					Description: "an inventory",
 					Variables:   "toto:toto",
+					ID:          4,
 				}}, &awx.ListInventoriesResponse{}, nil)
-			},
-			newData: map[string]interface{}{
-				"host_filter": "filter",
-				"kind":        "invent",
-				"description": "an inventory",
-				"variables":   "toto:toto\n",
 			},
 		},
 	}

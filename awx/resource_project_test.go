@@ -18,7 +18,7 @@ func Test_resourceProjectCreate(t *testing.T) {
 			name: "Error on list project",
 			args: args{
 				ctx: context.Background(),
-				d:   schema.TestResourceDataRaw(t, dataSourceProject().Schema, resourceDataMapProject),
+				d:   schema.TestResourceDataRaw(t, resourceProject().Schema, resourceDataMapProject),
 			},
 			want: diag.Diagnostics{{
 				Severity: diag.Error,

@@ -194,7 +194,7 @@ func resourceWorkflowJobTemplateNodeUpdate(ctx context.Context, d *schema.Resour
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
 			Summary:  "Unable to update WorkflowJobTemplateNode",
-			Detail:   fmt.Sprintf("WorkflowJobTemplateNode with name %s in the project id %d failed to update %s", d.Get("name").(string), d.Get("project_id").(int), err.Error()),
+			Detail:   fmt.Sprintf("WorkflowJobTemplateNode with id %v failed to update %s", d.Get("workflow_job_template_id").(int), err.Error()),
 		})
 		return diags
 	}

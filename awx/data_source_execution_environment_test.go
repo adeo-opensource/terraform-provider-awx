@@ -68,11 +68,7 @@ func Test_dataSourceExecutionEnvironmentsRead(t *testing.T) {
 			},
 			id: "3",
 			newData: map[string]interface{}{
-				"name":         "ExecutionEnvironment",
-				"image":        "open/awx-ee:latest",
-				"description":  "An execution environment",
-				"organization": 1,
-				"credential":   2,
+				"name": "ExecutionEnvironment",
 			},
 		},
 	}

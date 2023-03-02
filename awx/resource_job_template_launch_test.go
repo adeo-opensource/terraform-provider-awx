@@ -59,7 +59,7 @@ func Test_resourceJobTemplateLaunch(t *testing.T) {
 			want: diag.Diagnostics{{
 				Severity: diag.Error,
 				Summary:  "Unable to create JobTemplate",
-				Detail:   "JobTemplate with name foo in the project id 10293, failed to create nothing",
+				Detail:   "JobTemplate with id 4 failed to create nothing",
 			}},
 			mock: func(mockAWX *MockAWX) {
 				jobTemplate := &awx.JobLaunch{}

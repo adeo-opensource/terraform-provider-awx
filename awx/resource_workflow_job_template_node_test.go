@@ -169,7 +169,7 @@ func Test_resourceWorkflowJobTemplateNodeUpdate(t *testing.T) {
 			want: diag.Diagnostics{{
 				Severity: diag.Error,
 				Summary:  "Unable to update WorkflowJobTemplateNode",
-				Detail:   "WorkflowJobTemplateNode with name foo in the project id 1 failed to update nothing",
+				Detail:   "WorkflowJobTemplateNode with id 0 failed to update nothing",
 			}},
 			mock: func(mockAWX *MockAWX) {
 				mockAWX.On("GetWorkflowJobTemplateNodeByID", mock.Anything, mock.Anything).Return(&awx.WorkflowJobTemplateNode{}, nil)

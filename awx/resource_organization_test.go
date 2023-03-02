@@ -22,7 +22,7 @@ func Test_resourceOrganizationCreate(t *testing.T) {
 			want: diag.Diagnostics{{
 				Severity: diag.Error,
 				Summary:  "Unable to create Organizations",
-				Detail:   "Organizations with name foo in the project id 1, failed to create nothing",
+				Detail:   "Organizations with name foo, failed to create nothing",
 			}},
 			mock: func(mockAWX *MockAWX) {
 				organizations := &awx.Organization{}

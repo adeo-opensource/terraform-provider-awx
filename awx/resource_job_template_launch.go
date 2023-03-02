@@ -70,7 +70,7 @@ func resourceJobTemplateLaunchCreate(ctx context.Context, d *schema.ResourceData
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
 			Summary:  "Unable to create JobTemplate",
-			Detail:   fmt.Sprintf("JobTemplate with name %s in the project id %d, failed to create %s", d.Get("name").(string), d.Get("project_id").(int), err.Error()),
+			Detail:   fmt.Sprintf("JobTemplate with id %v failed to create %s", jobTemplateID, err.Error()),
 		})
 		return diags
 	}
