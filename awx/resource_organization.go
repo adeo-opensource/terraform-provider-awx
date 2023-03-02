@@ -53,10 +53,6 @@ func resourceOrganization() *schema.Resource {
 				Optional:    true,
 				Description: "Local absolute file path containing a custom Python virtualenv to use",
 			},
-			"project_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
 		},
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,

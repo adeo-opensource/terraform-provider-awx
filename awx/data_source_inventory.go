@@ -47,22 +47,6 @@ func dataSourceInventory() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"description": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"kind": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"host_filter": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"variables": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 		},
 	}
 }
@@ -97,7 +81,6 @@ func dataSourceInventoriesRead(ctx context.Context, d *schema.ResourceData, m in
 			"The Query Returns more than one Group, %d",
 			len(inventories),
 		)
-		return diags
 	}
 
 	inventory := inventories[0]

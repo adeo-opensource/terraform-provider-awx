@@ -32,10 +32,6 @@ func dataSourceProject() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"organization_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
 			"name": {
 				Type:     schema.TypeString,
 				Optional: true,

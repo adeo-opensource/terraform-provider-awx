@@ -118,10 +118,6 @@ func resourceWorkflowJobTemplate() *schema.Resource {
 				Optional: true,
 				Default:  "",
 			},
-			"project_id": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
 		},
 	}
 }

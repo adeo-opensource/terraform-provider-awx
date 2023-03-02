@@ -41,22 +41,6 @@ func dataSourceExecutionEnvironment() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"image": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"description": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"organization": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			"credential": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
 		},
 	}
 }
@@ -87,7 +71,6 @@ func dataSourceExecutionEnvironmentsRead(ctx context.Context, d *schema.Resource
 			"The query returns more than one execution environment, %d",
 			len(executionEnvironments),
 		)
-		return diags
 	}
 
 	executionEnvironment := executionEnvironments[0]
