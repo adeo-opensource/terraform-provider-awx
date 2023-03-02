@@ -12,14 +12,14 @@ resource "awx_setting" "social_auth_saml_technical_contact" {
   value = <<EOF
   {
     "givenName": "Myorg",
-    "emailAddress": "runTestCase@foo.com"
+    "emailAddress": "test@foo.com"
   }
   EOF
 }
 
 resource "awx_setting" "social_auth_saml_sp_entity_id" {
   name  = "SOCIAL_AUTH_SAML_SP_ENTITY_ID"
-  value = "runTestCase"
+  value = "test"
 }
 
 resource "awx_setting" "schedule_max_jobs" {

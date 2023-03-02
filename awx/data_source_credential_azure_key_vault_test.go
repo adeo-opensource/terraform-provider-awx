@@ -59,7 +59,7 @@ func Test_dataSourceCredentialAzureRead(t *testing.T) {
 					Inputs: map[string]interface{}{
 						"username": "borto",
 						"url":      "awx.url.foo",
-						"client":   "runTestCase",
+						"client":   "test",
 						"tenant":   "adeo-oss"},
 				}, nil)
 			},
@@ -68,7 +68,7 @@ func Test_dataSourceCredentialAzureRead(t *testing.T) {
 				"description":     "a description",
 				"organization_id": 1,
 				"url":             "awx.url.foo",
-				"client":          "runTestCase",
+				"client":          "test",
 				"secret":          "terces",
 				"tenant":          "adeo-oss",
 			},

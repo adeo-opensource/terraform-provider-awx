@@ -54,14 +54,14 @@ func Test_dataSourceCredentialTypeByIDRead(t *testing.T) {
 			},
 			want: nil,
 			mock: func(mockAWX *MockAWX) {
-				mockAWX.On("GetCredentialTypeByID", mock.Anything, mock.Anything).Return(&awx.CredentialType{ID: 1, Injectors: "inject", Name: "credType", Description: "cred description", Kind: "toto", Inputs: "runTestCase"}, nil)
+				mockAWX.On("GetCredentialTypeByID", mock.Anything, mock.Anything).Return(&awx.CredentialType{ID: 1, Injectors: "inject", Name: "credType", Description: "cred description", Kind: "toto", Inputs: "test"}, nil)
 			},
 			newData: map[string]interface{}{
 				"kind":        "toto",
 				"name":        "credType",
 				"description": "cred description",
 				"injectors":   "inject",
-				"inputs":      "runTestCase",
+				"inputs":      "test",
 			},
 			id: "1",
 		},
