@@ -5,7 +5,7 @@ Example Usage
 
 ```hcl
 resource "awx_execution_environment" "default" {
-    name  = "acc-runTestCase"
+    name  = "acc-test"
     image = "..."
 }
 ```

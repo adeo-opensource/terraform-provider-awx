@@ -5,7 +5,7 @@ Example Usage
 
 ```hcl
 resource "awx_credential_google_compute_engine" "default" {
-    name                = "acc-runTestCase"
+    name                = "acc-test"
     organization_id     = 1
     username            = "..."
     project             = "..."

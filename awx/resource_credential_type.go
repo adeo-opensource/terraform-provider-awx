@@ -5,7 +5,7 @@ Example Usage
 
 ```hcl
 resource "awx_credential_type" "default" {
-    name      = "acc-runTestCase"
+    name      = "acc-test"
     injectors = <<YAML
 ...
 YAML

@@ -5,7 +5,7 @@ Example Usage
 
 ```hcl
 resource "awx_inventory_source" "default" {
-    name                = "acc-runTestCase"
+    name                = "acc-test"
     inventory_id        = 1
     update_on_launch    = true
     source_project_id   = 1

@@ -5,7 +5,7 @@ Example Usage
 
 ```hcl
 resource "awx_credential_azure_key_vault" "default" {
-    name                = "acc-runTestCase"
+    name                = "acc-test"
     organization_id     = 1
     url                 = "..."
     client              = "..."

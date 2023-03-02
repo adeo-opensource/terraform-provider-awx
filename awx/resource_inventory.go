@@ -9,7 +9,7 @@ data "awx_organization" "default" {
 }
 
 resource "awx_inventory" "default" {
-    name            = "acc-runTestCase"
+    name            = "acc-test"
     organization_id = data.awx_organization.default.id
     variables       = <<YAML
 ---

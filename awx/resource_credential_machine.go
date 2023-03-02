@@ -6,7 +6,7 @@ Create a machine credential.
 ```hcl
 
 	resource "awx_credential_machine" "default" {
-	    name                = "acc-runTestCase"
+	    name                = "acc-test"
 	    organization_id     = 1
 	    username            = "..."
 	    password            = "..."

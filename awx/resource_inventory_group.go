@@ -5,7 +5,7 @@ Example Usage
 
 ```hcl
 resource "awx_inventory_group" "default" {
-    name = "acc-runTestCase"
+    name = "acc-test"
 }
 ```
 

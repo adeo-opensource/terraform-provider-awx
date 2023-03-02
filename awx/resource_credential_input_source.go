@@ -5,7 +5,7 @@ Example Usage
 
 ```hcl
 resource "awx_credential_input_source" "default" {
-    input_field_name     = "acc-runTestCase"
+    input_field_name     = "acc-test"
     target              = 1
     source              = 1
 }
