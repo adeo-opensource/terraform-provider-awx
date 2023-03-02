@@ -16,7 +16,7 @@ Example Usage
 
 ```hcl
 resource "awx_notification_template" "default" {
-    name            = "notification_template-runTestCase"
+    name            = "notification_template-test"
     organization_id = 1
     notification_type = "success"
 }

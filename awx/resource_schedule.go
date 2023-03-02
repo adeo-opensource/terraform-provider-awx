@@ -9,7 +9,7 @@ Example Usage
 data
 
 resource "awx_schedule" "default" {
-    name                      = "schedule-runTestCase"
+    name                      = "schedule-test"
     unified_job_template_id    = data.awx_job_template.baseconfig.id
     rrule                     = "DTSTART;TZID=Europe/Paris:20211214T120000 RRULE:INTERVAL=1;FREQ=DAILY"
 }
