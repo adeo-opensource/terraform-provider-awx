@@ -1,20 +1,20 @@
 /*
 Use this data source to list schedules.
 
-Example Usage
+# Example Usage
 
 ```hcl
 data "awx_schedule" "default" {}
 
-data "awx_schedule" "default" {
-    name = "private_services"
-}
+	data "awx_schedule" "default" {
+	    name = "private_services"
+	}
 
-data "awx_schedule" "default" {
-    id = 1
-}
+	data "awx_schedule" "default" {
+	    id = 1
+	}
+
 ```
-
 */
 package awx
 
@@ -22,7 +22,7 @@ import (
 	"context"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -47,7 +47,7 @@ func dataSourceSchedule() *schema.Resource {
 
 func dataSourceSchedulesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	params := make(map[string]string)
 	if groupName, okName := d.GetOk("name"); okName {
 		params["name"] = groupName.(string)

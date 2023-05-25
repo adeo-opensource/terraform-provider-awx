@@ -10,7 +10,7 @@ import (
 	"log"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -84,10 +84,10 @@ var workflowJobNodeSchema = map[string]*schema.Schema{
 	},
 }
 
-func createNodeForWorkflowJob(awxService *awx.WorkflowJobTemplateNodeStepService, ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func createNodeForWorkflowJob(awxService awx.WorkflowJobTemplateNodeStepService, typ string, ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 	templateNodeID := d.Get("workflow_job_template_node_id").(int)
-	result, err := awxService.CreateWorkflowJobTemplateNodeStep(templateNodeID, map[string]interface{}{
+	result, err := getCreateWorkflowJobTemplateNodeStepFuncForType(awxService, typ)(templateNodeID, map[string]interface{}{
 		"extra_data":            d.Get("extra_data").(string),
 		"inventory":             d.Get("inventory_id").(int),
 		"scm_branch":            d.Get("scm_branch").(string),
@@ -117,4 +117,16 @@ func createNodeForWorkflowJob(awxService *awx.WorkflowJobTemplateNodeStepService
 	}
 	d.SetId(strconv.Itoa(result.ID))
 	return resourceWorkflowJobTemplateNodeRead(ctx, d, m)
+}
+
+func getCreateWorkflowJobTemplateNodeStepFuncForType(client awx.WorkflowJobTemplateNodeStepService, typ string) func(id int, data map[string]interface{}, params map[string]string) (*awx.WorkflowJobTemplateNode, error) {
+	switch typ {
+	case "failure":
+		return client.CreateWorkflowJobTemplateFailureNodeStep
+	case "success":
+		return client.CreateWorkflowJobTemplateSuccessNodeStep
+	case "always":
+		return client.CreateWorkflowJobTemplateAlwaysNodeStep
+	}
+	return nil
 }

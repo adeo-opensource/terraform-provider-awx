@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -41,7 +41,7 @@ func resourceInventoryGroup() *schema.Resource {
 				Default:  "",
 			},
 			"inventory_id": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Optional: true,
 				ForceNew: true,
 			},
@@ -60,13 +60,12 @@ func resourceInventoryGroup() *schema.Resource {
 
 func resourceInventoryGroupCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 
-	client := m.(*awx.AWX)
-	awxService := client.GroupService
+	awxService := m.(awx.AWX)
 
-	result, err := awxService.CreateGroup(map[string]interface{}{
+	result, err := awxService.GroupService.Create(map[string]interface{}{
 		"name":        d.Get("name").(string),
 		"description": d.Get("description").(string),
-		"inventory":   d.Get("inventory_id").(string),
+		"inventory":   d.Get("inventory_id").(int),
 		"variables":   d.Get("variables").(string),
 	}, map[string]string{})
 	if err != nil {
@@ -79,17 +78,17 @@ func resourceInventoryGroupCreate(ctx context.Context, d *schema.ResourceData, m
 }
 
 func resourceInventoryGroupUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.GroupService
+	awxService := m.(awx.AWX)
+
 	id, diags := convertStateIDToNummeric(diagElementInventoryGroupTitle, d)
 	if diags.HasError() {
 		return diags
 	}
 
-	_, err := awxService.UpdateGroup(id, map[string]interface{}{
+	_, err := awxService.GroupService.Update(id, map[string]interface{}{
 		"name":        d.Get("name").(string),
 		"description": d.Get("description").(string),
-		"inventory":   d.Get("inventory_id").(string),
+		"inventory":   d.Get("inventory_id").(int),
 		"variables":   d.Get("variables").(string),
 	}, nil)
 	if err != nil {
@@ -101,15 +100,14 @@ func resourceInventoryGroupUpdate(ctx context.Context, d *schema.ResourceData, m
 }
 
 func resourceInventoryGroupDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.GroupService
+	awxService := m.(awx.AWX)
 
 	id, diags := convertStateIDToNummeric(diagElementInventoryGroupTitle, d)
 	if diags.HasError() {
 		return diags
 	}
 
-	if _, err := awxService.DeleteGroup(id); err != nil {
+	if _, err := awxService.GroupService.Delete(id); err != nil {
 		return buildDiagDeleteFail(
 			diagElementInventoryGroupTitle,
 			fmt.Sprintf("ID: %v, got %s ",
@@ -121,15 +119,14 @@ func resourceInventoryGroupDelete(ctx context.Context, d *schema.ResourceData, m
 
 func resourceInventoryGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.GroupService
+	awxService := m.(awx.AWX)
 
 	id, diags := convertStateIDToNummeric(diagElementInventoryGroupTitle, d)
 	if diags.HasError() {
 		return diags
 	}
 
-	res, err := awxService.GetGroupByID(id, make(map[string]string))
+	res, err := awxService.GroupService.GetByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail(diagElementInventoryGroupTitle, id, err)
 	}

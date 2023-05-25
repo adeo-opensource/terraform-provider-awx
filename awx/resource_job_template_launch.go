@@ -33,7 +33,7 @@ import (
 	"log"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -57,21 +57,20 @@ func resourceJobTemplateLaunch() *schema.Resource {
 
 func resourceJobTemplateLaunchCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.JobTemplateService
+	awxService := m.(awx.AWX)
 	jobTemplateID := d.Get("job_template_id").(int)
-	_, err := awxService.GetJobTemplateByID(jobTemplateID, make(map[string]string))
+	_, err := awxService.JobTemplateService.GetByID(jobTemplateID, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("job template", jobTemplateID, err)
 	}
 
-	res, err := awxService.Launch(jobTemplateID, map[string]interface{}{}, map[string]string{})
+	res, err := awxService.JobTemplateService.LaunchJob(jobTemplateID, map[string]interface{}{}, map[string]string{})
 	if err != nil {
 		log.Printf("Failed to create Template Launch %v", err)
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
 			Summary:  "Unable to create JobTemplate",
-			Detail:   fmt.Sprintf("JobTemplate with name %s in the project id %d, failed to create %s", d.Get("name").(string), d.Get("project_id").(int), err.Error()),
+			Detail:   fmt.Sprintf("JobTemplate with id %v failed to create %s", jobTemplateID, err.Error()),
 		})
 		return diags
 	}
@@ -88,10 +87,9 @@ func resourceJobRead(ctx context.Context, d *schema.ResourceData, m interface{})
 
 func resourceJobDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.JobService
+	awxService := m.(awx.AWX)
 	jobID, diags := convertStateIDToNummeric("Delete Job", d)
-	_, err := awxService.GetJob(jobID, map[string]string{})
+	_, err := awxService.JobService.GetJob(jobID, map[string]string{})
 	if err != nil {
 		return buildDiagNotFoundFail("job", jobID, err)
 	}

@@ -20,7 +20,7 @@ import (
 	"log"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -62,10 +62,9 @@ func resourceExecutionEnvironment() *schema.Resource {
 
 func resourceExecutionEnvironmentsCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.ExecutionEnvironmentsService
+	awxService := m.(awx.AWX)
 
-	result, err := awxService.CreateExecutionEnvironment(map[string]interface{}{
+	result, err := awxService.ExecutionEnvironmentService.Create(map[string]interface{}{
 		"name":         d.Get("name").(string),
 		"image":        d.Get("image").(string),
 		"description":  d.Get("description").(string),
@@ -88,8 +87,7 @@ func resourceExecutionEnvironmentsCreate(ctx context.Context, d *schema.Resource
 
 func resourceExecutionEnvironmentsUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.ExecutionEnvironmentsService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Update ExecutionEnvironments", d)
 	if diags.HasError() {
 		return diags
@@ -97,12 +95,12 @@ func resourceExecutionEnvironmentsUpdate(ctx context.Context, d *schema.Resource
 
 	params := make(map[string]string)
 
-	_, err := awxService.GetExecutionEnvironmentByID(id, params)
+	_, err := awxService.ExecutionEnvironmentService.GetByID(id, params)
 	if err != nil {
 		return buildDiagNotFoundFail("ExecutionEnvironments", id, err)
 	}
 
-	_, err = awxService.UpdateExecutionEnvironment(id, map[string]interface{}{
+	_, err = awxService.ExecutionEnvironmentService.Update(id, map[string]interface{}{
 		"name":         d.Get("name").(string),
 		"image":        d.Get("image").(string),
 		"description":  d.Get("description").(string),
@@ -123,14 +121,13 @@ func resourceExecutionEnvironmentsUpdate(ctx context.Context, d *schema.Resource
 
 func resourceExecutionEnvironmentsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.ExecutionEnvironmentsService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Read ExecutionEnvironments", d)
 	if diags.HasError() {
 		return diags
 	}
 
-	res, err := awxService.GetExecutionEnvironmentByID(id, make(map[string]string))
+	res, err := awxService.ExecutionEnvironmentService.GetByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("ExecutionEnvironment", id, err)
 
@@ -142,14 +139,13 @@ func resourceExecutionEnvironmentsRead(ctx context.Context, d *schema.ResourceDa
 func resourceExecutionEnvironmentsDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 	digMessagePart := "ExecutionEnvironment"
-	client := m.(*awx.AWX)
-	awxService := client.ExecutionEnvironmentsService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Delete ExecutionEnvironment", d)
 	if diags.HasError() {
 		return diags
 	}
 
-	if _, err := awxService.DeleteExecutionEnvironment(id); err != nil {
+	if _, err := awxService.ExecutionEnvironmentService.Delete(id); err != nil {
 		return buildDiagDeleteFail(digMessagePart, fmt.Sprintf("ExecutionEnvironmentID %v, got %s ", id, err.Error()))
 	}
 	d.SetId("")

@@ -1,19 +1,20 @@
 /*
 Use this data source to list inventory groups for a specified inventory.
 
-Example Usage
+# Example Usage
 
 ```hcl
-data "awx_inventory" "default" {
-    id = 1
-}
 
-data "awx_inventory_group" "default" {
-    name         = "k3sPrimary"
-    inventory_id = data.awx_inventory.default.id
-}
+	data "awx_inventory" "default" {
+	    id = 1
+	}
+
+	data "awx_inventory_group" "default" {
+	    name         = "k3sPrimary"
+	    inventory_id = data.awx_inventory.default.id
+	}
+
 ```
-
 */
 package awx
 
@@ -21,7 +22,7 @@ import (
 	"context"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -50,7 +51,7 @@ func dataSourceInventoryGroup() *schema.Resource {
 
 func dataSourceInventoryGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	params := make(map[string]string)
 
 	inventoryId := d.Get("inventory_id").(int)
@@ -73,7 +74,7 @@ func dataSourceInventoryGroupRead(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	inventoryID := d.Get("inventory_id").(int)
-	groups, _, err := client.InventoryGroupService.ListInventoryGroups(inventoryID, params)
+	groups, _, err := client.InventoryService.ListInventoryGroups(inventoryID, params)
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Get: Fail to fetch Inventory Group",

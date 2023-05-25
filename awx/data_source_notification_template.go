@@ -1,16 +1,16 @@
 /*
 Use this data source to list notification template.
 
-Example Usage
+# Example Usage
 
 ```hcl
 data "awx_notification_template" "default" {}
 
-data "awx_notification_template" "default" {
-    name = "private_services"
-}
-```
+	data "awx_notification_template" "default" {
+	    name = "private_services"
+	}
 
+```
 */
 package awx
 
@@ -18,7 +18,7 @@ import (
 	"context"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -43,7 +43,7 @@ func dataSourceNotificationTemplate() *schema.Resource {
 
 func dataSourceNotificationTemplatesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	params := make(map[string]string)
 	if groupName, okName := d.GetOk("name"); okName {
 		params["name"] = groupName.(string)
@@ -57,14 +57,14 @@ func dataSourceNotificationTemplatesRead(ctx context.Context, d *schema.Resource
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Get: Fail to fetch NotificationTemplate",
-			"Fail to find the group got: %s",
+			"Fail to find the notification template got: %s",
 			err.Error(),
 		)
 	}
 	if len(notificationTemplates) > 1 {
 		return buildDiagnosticsMessage(
 			"Get: find more than one Element",
-			"The Query Returns more than one Group, %d",
+			"The Query Returns more than one NotificationTemplate, %d",
 			len(notificationTemplates),
 		)
 	}

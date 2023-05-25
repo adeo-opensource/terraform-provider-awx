@@ -1,15 +1,16 @@
 /*
 Create a machine credential.
 
-Example Usage
+# Example Usage
 
 ```hcl
-resource "awx_credential_machine" "default" {
-    name                = "acc-test"
-    organization_id     = 1
-    username            = "..."
-    password            = "..."
-}
+
+	resource "awx_credential_machine" "default" {
+	    name                = "acc-test"
+	    organization_id     = 1
+	    username            = "..."
+	    password            = "..."
+	}
 */
 package awx
 
@@ -18,7 +19,7 @@ import (
 	"fmt"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -103,8 +104,8 @@ func resourceCredentialMachineCreate(ctx context.Context, d *schema.ResourceData
 		},
 	}
 
-	client := m.(*awx.AWX)
-	cred, err := client.CredentialsService.CreateCredentials(newCredential, map[string]string{})
+	client := m.(awx.AWX)
+	cred, err := client.CredentialService.Create(newCredential, map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -123,9 +124,9 @@ func resourceCredentialMachineCreate(ctx context.Context, d *schema.ResourceData
 func resourceCredentialMachineRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	id, _ := strconv.Atoi(d.Id())
-	cred, err := client.CredentialsService.GetCredentialsByID(id, map[string]string{})
+	cred, err := client.CredentialService.GetByID(id, map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -190,8 +191,8 @@ func resourceCredentialMachineUpdate(ctx context.Context, d *schema.ResourceData
 			},
 		}
 
-		client := m.(*awx.AWX)
-		_, err = client.CredentialsService.UpdateCredentialsByID(id, updatedCredential, map[string]string{})
+		client := m.(awx.AWX)
+		_, err = client.CredentialService.Update(id, updatedCredential, map[string]string{})
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,

@@ -1,20 +1,21 @@
 /*
 Use this data source to list inventory roles for a specified inventory.
 
-Example Usage
+# Example Usage
 
 ```hcl
-data "awx_inventory" "myinv" {
-    name = "My Inventory"
-  ...
-}
 
-data "awx_inventory_role" "inv_admin_role" {
-    name         = "Admin"
-    inventory_id = data.awx_inventory.myinv.id
-}
+	data "awx_inventory" "myinv" {
+	    name = "My Inventory"
+	  ...
+	}
+
+	data "awx_inventory_role" "inv_admin_role" {
+	    name         = "Admin"
+	    inventory_id = data.awx_inventory.myinv.id
+	}
+
 ```
-
 */
 package awx
 
@@ -22,7 +23,7 @@ import (
 	"context"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -51,7 +52,7 @@ func dataSourceInventoryRole() *schema.Resource {
 
 func dataSourceInventoryRoleRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	params := make(map[string]string)
 
 	inventoryId := d.Get("inventory_id").(int)
@@ -64,7 +65,7 @@ func dataSourceInventoryRoleRead(ctx context.Context, d *schema.ResourceData, m 
 		return diags
 	}
 
-	inventory, err := client.InventoriesService.GetInventoryByID(inventoryId, params)
+	inventory, err := client.InventoryService.GetByID(inventoryId, params)
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Get: Fail to fetch Inventory",
@@ -73,7 +74,7 @@ func dataSourceInventoryRoleRead(ctx context.Context, d *schema.ResourceData, m 
 		)
 	}
 
-	roleslist := []*awx.ApplyRole{
+	rolesList := []*awx.ApplyRole{
 		inventory.SummaryFields.ObjectRoles.UseRole,
 		inventory.SummaryFields.ObjectRoles.AdminRole,
 		inventory.SummaryFields.ObjectRoles.AdhocRole,
@@ -84,7 +85,7 @@ func dataSourceInventoryRoleRead(ctx context.Context, d *schema.ResourceData, m 
 
 	if roleID, okID := d.GetOk("id"); okID {
 		id := roleID.(int)
-		for _, v := range roleslist {
+		for _, v := range rolesList {
 			if v != nil && id == v.ID {
 				d = setInventoryRoleData(d, v)
 				return diags
@@ -95,7 +96,7 @@ func dataSourceInventoryRoleRead(ctx context.Context, d *schema.ResourceData, m 
 	if roleName, okName := d.GetOk("name"); okName {
 		name := roleName.(string)
 
-		for _, v := range roleslist {
+		for _, v := range rolesList {
 			if v != nil && name == v.Name {
 				d = setInventoryRoleData(d, v)
 				return diags

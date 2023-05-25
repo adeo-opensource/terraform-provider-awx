@@ -1,12 +1,11 @@
 /*
 Use this data source to list credentials.
 
-Example Usage
+# Example Usage
 
 ```hcl
 data "awx_credentials" "default" {}
 ```
-
 */
 package awx
 
@@ -15,7 +14,7 @@ import (
 	"strconv"
 	"time"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -42,17 +41,16 @@ func dataSourceCredentials() *schema.Resource {
 							Computed: true,
 						},
 					},
-				},
-			},
+				}},
 		},
 	}
 }
 
 func dataSourceCredentialsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 
-	creds, err := client.CredentialsService.ListCredentials(map[string]string{})
+	creds, _, err := client.CredentialService.List(map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,

@@ -23,7 +23,7 @@ import (
 	"fmt"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -101,8 +101,8 @@ func resourceCredentialTypeCreate(ctx context.Context, d *schema.ResourceData, m
 		"injectors":   injectors_map,
 	}
 
-	client := m.(*awx.AWX)
-	credtype, err := client.CredentialTypeService.CreateCredentialType(newCredentialType, map[string]string{})
+	client := m.(awx.AWX)
+	credtype, err := client.CredentialTypeService.Create(newCredentialType, map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -121,9 +121,9 @@ func resourceCredentialTypeCreate(ctx context.Context, d *schema.ResourceData, m
 func resourceCredentialTypeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	id, _ := strconv.Atoi(d.Id())
-	credtype, err := client.CredentialTypeService.GetCredentialTypeByID(id, map[string]string{})
+	credType, err := client.CredentialTypeService.GetByID(id, map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -133,11 +133,11 @@ func resourceCredentialTypeRead(ctx context.Context, d *schema.ResourceData, m i
 		return diags
 	}
 
-	d.Set("name", credtype.Name)
-	d.Set("description", credtype.Description)
-	d.Set("kind", credtype.Kind)
-	d.Set("inputs", credtype.Inputs)
-	d.Set("injectors", credtype.Injectors)
+	d.Set("name", credType.Name)
+	d.Set("description", credType.Description)
+	d.Set("kind", credType.Kind)
+	d.Set("inputs", credType.Inputs)
+	d.Set("injectors", credType.Injectors)
 
 	return diags
 }
@@ -189,8 +189,8 @@ func resourceCredentialTypeUpdate(ctx context.Context, d *schema.ResourceData, m
 			"injectors":   injectors_map,
 		}
 
-		client := m.(*awx.AWX)
-		_, err = client.CredentialTypeService.UpdateCredentialTypeByID(id, updatedCredentialType, map[string]string{})
+		client := m.(awx.AWX)
+		_, err = client.CredentialTypeService.Update(id, updatedCredentialType, map[string]string{})
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,

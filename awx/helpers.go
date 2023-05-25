@@ -6,28 +6,29 @@ import (
 	"fmt"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"gopkg.in/yaml.v2"
 )
 
 const (
-	diagElementInventoryGroupTitle  = "Inventory Group"
-	diagElementInventorySourceTitle = "Inventory Source"
-	diagElementInventoryTitle       = "Inventory"
-	diagElementHostTitle            = "Host"
+	diagElementInventoryGroupTitle       = "Inventory Group"
+	diagElementInventorySourceTitle      = "Inventory Source"
+	diagElementInventoryTitle            = "Inventory"
+	diagElementHostTitle                 = "Host"
+	diagElementScheduleTitle             = "Schedule"
+	diagElementNotificationTemplateTitle = "Notification Template"
 )
 
 func resourceJobTemplateDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.JobTemplateService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Delete JobTemplate", d)
 	if diags.HasError() {
 		return diags
 	}
-	_, err := awxService.DeleteJobTemplate(id)
+	_, err := awxService.JobTemplateService.Delete(id)
 	if err != nil {
 		return buildDiagDeleteFail(
 			"JobTemplate",
@@ -103,8 +104,8 @@ func CredentialsServiceDeleteByID(ctx context.Context, d *schema.ResourceData, m
 	var diags diag.Diagnostics
 
 	id, _ := strconv.Atoi(d.Id())
-	client := m.(*awx.AWX)
-	err := client.CredentialsService.DeleteCredentialsByID(id, map[string]string{})
+	client := m.(awx.AWX)
+	_, err := client.CredentialService.Delete(id)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -119,8 +120,8 @@ func CredentialTypeServiceDeleteByID(ctx context.Context, d *schema.ResourceData
 	var diags diag.Diagnostics
 
 	id, _ := strconv.Atoi(d.Id())
-	client := m.(*awx.AWX)
-	err := client.CredentialTypeService.DeleteCredentialTypeByID(id, map[string]string{})
+	client := m.(awx.AWX)
+	_, err := client.CredentialTypeService.Delete(id)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,

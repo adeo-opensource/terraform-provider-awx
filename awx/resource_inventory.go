@@ -28,7 +28,7 @@ import (
 	"fmt"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -51,7 +51,7 @@ func resourceInventory() *schema.Resource {
 				Default:  "",
 			},
 			"organization_id": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Required: true,
 			},
 			"kind": {
@@ -78,12 +78,11 @@ func resourceInventory() *schema.Resource {
 }
 
 func resourceInventoryCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.InventoriesService
+	awxService := m.(awx.AWX)
 
-	result, err := awxService.CreateInventory(map[string]interface{}{
+	result, err := awxService.InventoryService.Create(map[string]interface{}{
 		"name":         d.Get("name").(string),
-		"organization": d.Get("organization_id").(string),
+		"organization": d.Get("organization_id").(int),
 		"description":  d.Get("description").(string),
 		"kind":         d.Get("kind").(string),
 		"host_filter":  d.Get("host_filter").(string),
@@ -99,15 +98,14 @@ func resourceInventoryCreate(ctx context.Context, d *schema.ResourceData, m inte
 }
 
 func resourceInventoryUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.InventoriesService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric(diagElementInventoryTitle, d)
 	if diags.HasError() {
 		return diags
 	}
-	_, err := awxService.UpdateInventory(id, map[string]interface{}{
+	_, err := awxService.InventoryService.Update(id, map[string]interface{}{
 		"name":         d.Get("name").(string),
-		"organization": d.Get("organization_id").(string),
+		"organization": d.Get("organization_id").(int),
 		"description":  d.Get("description").(string),
 		"kind":         d.Get("kind").(string),
 		"host_filter":  d.Get("host_filter").(string),
@@ -122,14 +120,13 @@ func resourceInventoryUpdate(ctx context.Context, d *schema.ResourceData, m inte
 }
 
 func resourceInventoryRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.InventoriesService
+	awxService := m.(awx.AWX)
 	id, err := strconv.Atoi(d.Id())
 	id, diags := convertStateIDToNummeric(diagElementInventoryTitle, d)
 	if diags.HasError() {
 		return diags
 	}
-	r, err := awxService.GetInventory(id, map[string]string{})
+	r, err := awxService.InventoryService.GetByID(id, map[string]string{})
 	if err != nil {
 		return buildDiagNotFoundFail(diagElementInventoryTitle, id, err)
 	}
@@ -138,13 +135,12 @@ func resourceInventoryRead(ctx context.Context, d *schema.ResourceData, m interf
 }
 
 func resourceInventoryDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.InventoriesService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric(diagElementInventoryTitle, d)
 	if diags.HasError() {
 		return diags
 	}
-	if _, err := awxService.DeleteInventory(id); err != nil {
+	if _, err := awxService.InventoryService.Delete(id); err != nil {
 		return buildDiagDeleteFail(
 			diagElementInventoryTitle,
 			fmt.Sprintf(

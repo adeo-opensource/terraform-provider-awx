@@ -48,7 +48,7 @@ import (
 	"encoding/json"
 	"time"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -87,14 +87,13 @@ func resourceSetting() *schema.Resource {
 type setting map[string]string
 
 func resourceSettingUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.SettingService
+	awxService := m.(awx.AWX)
 
-	_, err := awxService.GetSettingsBySlug("all", make(map[string]string))
+	_, err := awxService.SettingService.GetSettingsBySlug("all", make(map[string]string))
 	if err != nil {
 		return buildDiagnosticsMessage(
-			"Create: failed to fetch settings",
-			"Failed to fetch setting, got: %s", err.Error(),
+			"Update: failed to fetch settings",
+			"Update to fetch setting, got: %s", err.Error(),
 		)
 	}
 
@@ -125,11 +124,11 @@ func resourceSettingUpdate(ctx context.Context, d *schema.ResourceData, m interf
 		name: formatted_value,
 	}
 
-	_, err = awxService.UpdateSettings("all", payload, make(map[string]string))
+	_, err = awxService.SettingService.UpdateSettings("all", payload, make(map[string]string))
 	if err != nil {
 		return buildDiagnosticsMessage(
-			"Create: setting not created",
-			"failed to save setting data, got: %s, %s", err.Error(), value,
+			"Update: setting not updated",
+			"failed to update setting data, got: %s, %s", err.Error(), value,
 		)
 	}
 
@@ -139,10 +138,9 @@ func resourceSettingUpdate(ctx context.Context, d *schema.ResourceData, m interf
 
 func resourceSettingRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.SettingService
+	awxService := m.(awx.AWX)
 
-	_, err := awxService.GetSettingsBySlug("all", make(map[string]string))
+	_, err := awxService.SettingService.GetSettingsBySlug("all", make(map[string]string))
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Unable to fetch settings",

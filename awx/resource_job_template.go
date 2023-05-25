@@ -33,7 +33,7 @@ import (
 	"log"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -212,10 +212,9 @@ func resourceJobTemplate() *schema.Resource {
 
 func resourceJobTemplateCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.JobTemplateService
+	awxService := m.(awx.AWX)
 
-	result, err := awxService.CreateJobTemplate(map[string]interface{}{
+	result, err := awxService.JobTemplateService.Create(map[string]interface{}{
 		"name":                     d.Get("name").(string),
 		"description":              d.Get("description").(string),
 		"job_type":                 d.Get("job_type").(string),
@@ -265,20 +264,20 @@ func resourceJobTemplateCreate(ctx context.Context, d *schema.ResourceData, m in
 
 func resourceJobTemplateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.JobTemplateService
+	awxService := m.(awx.AWX)
+
 	id, diags := convertStateIDToNummeric("Update JobTemplate", d)
 	if diags.HasError() {
 		return diags
 	}
 
 	params := make(map[string]string)
-	_, err := awxService.GetJobTemplateByID(id, params)
+	_, err := awxService.JobTemplateService.GetByID(id, params)
 	if err != nil {
 		return buildDiagNotFoundFail("job template", id, err)
 	}
 
-	_, err = awxService.UpdateJobTemplate(id, map[string]interface{}{
+	_, err = awxService.JobTemplateService.Update(id, map[string]interface{}{
 		"name":                     d.Get("name").(string),
 		"description":              d.Get("description").(string),
 		"job_type":                 d.Get("job_type").(string),
@@ -326,14 +325,14 @@ func resourceJobTemplateUpdate(ctx context.Context, d *schema.ResourceData, m in
 
 func resourceJobTemplateRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.JobTemplateService
+	awxService := m.(awx.AWX)
+
 	id, diags := convertStateIDToNummeric("Read JobTemplate", d)
 	if diags.HasError() {
 		return diags
 	}
 
-	res, err := awxService.GetJobTemplateByID(id, make(map[string]string))
+	res, err := awxService.JobTemplateService.GetByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("job template", id, err)
 

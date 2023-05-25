@@ -12,7 +12,7 @@ import (
 	"log"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -123,10 +123,9 @@ func resourceWorkflowJobTemplateNode() *schema.Resource {
 
 func resourceWorkflowJobTemplateNodeCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateNodeService
+	awxService := m.(awx.AWX)
 
-	result, err := awxService.CreateWorkflowJobTemplateNode(map[string]interface{}{
+	result, err := awxService.WorkflowJobTemplateNodeService.Create(map[string]interface{}{
 		"extra_data":            d.Get("extra_data").(string),
 		"inventory":             d.Get("inventory_id").(int),
 		"scm_branch":            d.Get("scm_branch").(string),
@@ -161,20 +160,19 @@ func resourceWorkflowJobTemplateNodeCreate(ctx context.Context, d *schema.Resour
 
 func resourceWorkflowJobTemplateNodeUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateNodeService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Update WorkflowJobTemplateNode", d)
 	if diags.HasError() {
 		return diags
 	}
 
 	params := make(map[string]string)
-	_, err := awxService.GetWorkflowJobTemplateNodeByID(id, params)
+	_, err := awxService.WorkflowJobTemplateNodeService.GetByID(id, params)
 	if err != nil {
 		return buildDiagNotFoundFail("workflow job template node", id, err)
 	}
 
-	_, err = awxService.UpdateWorkflowJobTemplateNode(id, map[string]interface{}{
+	_, err = awxService.WorkflowJobTemplateNodeService.Update(id, map[string]interface{}{
 		"extra_data":            d.Get("extra_data").(string),
 		"inventory":             d.Get("inventory_id").(int),
 		"scm_branch":            d.Get("scm_branch").(string),
@@ -196,7 +194,7 @@ func resourceWorkflowJobTemplateNodeUpdate(ctx context.Context, d *schema.Resour
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
 			Summary:  "Unable to update WorkflowJobTemplateNode",
-			Detail:   fmt.Sprintf("WorkflowJobTemplateNode with name %s in the project id %d failed to update %s", d.Get("name").(string), d.Get("project_id").(int), err.Error()),
+			Detail:   fmt.Sprintf("WorkflowJobTemplateNode with id %v failed to update %s", d.Get("workflow_job_template_id").(int), err.Error()),
 		})
 		return diags
 	}
@@ -206,14 +204,13 @@ func resourceWorkflowJobTemplateNodeUpdate(ctx context.Context, d *schema.Resour
 
 func resourceWorkflowJobTemplateNodeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateNodeService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Read WorkflowJobTemplateNode", d)
 	if diags.HasError() {
 		return diags
 	}
 
-	res, err := awxService.GetWorkflowJobTemplateNodeByID(id, make(map[string]string))
+	res, err := awxService.WorkflowJobTemplateNodeService.GetByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("workflow job template node", id, err)
 
@@ -223,16 +220,15 @@ func resourceWorkflowJobTemplateNodeRead(ctx context.Context, d *schema.Resource
 }
 
 func resourceWorkflowJobTemplateNodeDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateNodeService
-	id, diags := convertStateIDToNummeric(diagElementHostTitle, d)
+	awxService := m.(awx.AWX)
+	id, diags := convertStateIDToNummeric("WorkflowJobTemplateNode", d)
 	if diags.HasError() {
 		return diags
 	}
 
-	if _, err := awxService.DeleteWorkflowJobTemplateNode(id); err != nil {
+	if _, err := awxService.WorkflowJobTemplateNodeService.Delete(id); err != nil {
 		return buildDiagDeleteFail(
-			diagElementHostTitle,
+			"WorkflowJobTemplateNode",
 			fmt.Sprintf("id %v, got %s ",
 				id, err.Error()))
 	}

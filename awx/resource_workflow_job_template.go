@@ -25,7 +25,7 @@ import (
 	"log"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -124,10 +124,9 @@ func resourceWorkflowJobTemplate() *schema.Resource {
 
 func resourceWorkflowJobTemplateCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateService
+	awxService := m.(awx.AWX)
 
-	result, err := awxService.CreateWorkflowJobTemplate(map[string]interface{}{
+	result, err := awxService.WorkflowJobTemplateService.Create(map[string]interface{}{
 		"name":                     d.Get("name").(string),
 		"description":              d.Get("description").(string),
 		"organization":             d.Get("organization_id").(int),
@@ -160,20 +159,19 @@ func resourceWorkflowJobTemplateCreate(ctx context.Context, d *schema.ResourceDa
 
 func resourceWorkflowJobTemplateUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Update WorkflowJobTemplate", d)
 	if diags.HasError() {
 		return diags
 	}
 
 	params := make(map[string]string)
-	_, err := awxService.GetWorkflowJobTemplateByID(id, params)
+	_, err := awxService.WorkflowJobTemplateService.GetByID(id, params)
 	if err != nil {
 		return buildDiagNotFoundFail("job Workflow template", id, err)
 	}
 
-	_, err = awxService.UpdateWorkflowJobTemplate(id, map[string]interface{}{
+	_, err = awxService.WorkflowJobTemplateService.Update(id, map[string]interface{}{
 		"name":                     d.Get("name").(string),
 		"description":              d.Get("description").(string),
 		"organization":             d.Get("organization_id").(int),
@@ -194,7 +192,7 @@ func resourceWorkflowJobTemplateUpdate(ctx context.Context, d *schema.ResourceDa
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
 			Summary:  "Unable to update WorkflowJobTemplate",
-			Detail:   fmt.Sprintf("WorkflowJobTemplate with name %s in the project id %d failed to update %s", d.Get("name").(string), d.Get("project_id").(int), err.Error()),
+			Detail:   fmt.Sprintf("WorkflowJobTemplate with name %s failed to update %s", d.Get("name").(string), err.Error()),
 		})
 		return diags
 	}
@@ -204,14 +202,13 @@ func resourceWorkflowJobTemplateUpdate(ctx context.Context, d *schema.ResourceDa
 
 func resourceWorkflowJobTemplateRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateService
+	awxService := m.(awx.AWX)
 	id, diags := convertStateIDToNummeric("Read WorkflowJobTemplate", d)
 	if diags.HasError() {
 		return diags
 	}
 
-	res, err := awxService.GetWorkflowJobTemplateByID(id, make(map[string]string))
+	res, err := awxService.WorkflowJobTemplateService.GetByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("workflow job template", id, err)
 
@@ -221,16 +218,15 @@ func resourceWorkflowJobTemplateRead(ctx context.Context, d *schema.ResourceData
 }
 
 func resourceWorkflowJobTemplateDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateService
-	id, diags := convertStateIDToNummeric(diagElementHostTitle, d)
+	awxService := m.(awx.AWX)
+	id, diags := convertStateIDToNummeric("WorkflowJobTemplate", d)
 	if diags.HasError() {
 		return diags
 	}
 
-	if _, err := awxService.DeleteWorkflowJobTemplate(id); err != nil {
+	if _, err := awxService.WorkflowJobTemplateService.Delete(id); err != nil {
 		return buildDiagDeleteFail(
-			diagElementHostTitle,
+			"WorkflowJobTemplate",
 			fmt.Sprintf("id %v, got %s ",
 				id, err.Error()))
 	}

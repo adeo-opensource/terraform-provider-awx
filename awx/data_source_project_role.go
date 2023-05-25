@@ -1,19 +1,20 @@
 /*
 Use this data source to list project roles for a speficied project.
 
-Example Usage
+# Example Usage
 
 ```hcl
-resource "awx_project" "myproj" {
-    name = "My AWX Project"
-}
 
-data "awx_project_role" "proj_admins" {
-    name       = "Admin"
-    project_id = resource.awx_project.myproj.id
-}
+	resource "awx_project" "myproj" {
+	    name = "My AWX Project"
+	}
+
+	data "awx_project_role" "proj_admins" {
+	    name       = "Admin"
+	    project_id = resource.awx_project.myproj.id
+	}
+
 ```
-
 */
 package awx
 
@@ -21,7 +22,7 @@ import (
 	"context"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -50,7 +51,7 @@ func dataSourceProjectRole() *schema.Resource {
 
 func dataSourceProjectRolesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	params := make(map[string]string)
 
 	projectId := d.Get("project_id").(int)
@@ -63,7 +64,7 @@ func dataSourceProjectRolesRead(ctx context.Context, d *schema.ResourceData, m i
 		return diags
 	}
 
-	project, err := client.ProjectService.GetProjectByID(projectId, params)
+	project, err := client.ProjectService.GetByID(projectId, params)
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Get: Fail to fetch Project",
@@ -72,7 +73,7 @@ func dataSourceProjectRolesRead(ctx context.Context, d *schema.ResourceData, m i
 		)
 	}
 
-	roleslist := []*awx.ApplyRole{
+	rolesList := []*awx.ApplyRole{
 		project.SummaryFields.ObjectRoles.UseRole,
 		project.SummaryFields.ObjectRoles.AdminRole,
 		project.SummaryFields.ObjectRoles.UpdateRole,
@@ -81,7 +82,7 @@ func dataSourceProjectRolesRead(ctx context.Context, d *schema.ResourceData, m i
 
 	if roleID, okID := d.GetOk("id"); okID {
 		id := roleID.(int)
-		for _, v := range roleslist {
+		for _, v := range rolesList {
 			if v != nil && id == v.ID {
 				d = setProjectRoleData(d, v)
 				return diags
@@ -92,7 +93,7 @@ func dataSourceProjectRolesRead(ctx context.Context, d *schema.ResourceData, m i
 	if roleName, okName := d.GetOk("name"); okName {
 		name := roleName.(string)
 
-		for _, v := range roleslist {
+		for _, v := range rolesList {
 			if v != nil && name == v.Name {
 				d = setProjectRoleData(d, v)
 				return diags

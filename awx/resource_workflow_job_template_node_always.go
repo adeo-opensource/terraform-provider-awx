@@ -22,7 +22,7 @@ package awx
 import (
 	"context"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -37,7 +37,6 @@ func resourceWorkflowJobTemplateNodeAlways() *schema.Resource {
 	}
 }
 func resourceWorkflowJobTemplateNodeAlwaysCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.WorkflowJobTemplateNodeAlwaysService
-	return createNodeForWorkflowJob(awxService, ctx, d, m)
+	awxService := m.(awx.AWX)
+	return createNodeForWorkflowJob(awxService.WorkflowJobTemplateNodeStepService, "always", ctx, d, m)
 }

@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -128,10 +128,9 @@ func resourceInventorySource() *schema.Resource {
 }
 
 func resourceInventorySourceCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.InventorySourcesService
+	awxService := m.(awx.AWX)
 
-	result, err := awxService.CreateInventorySource(map[string]interface{}{
+	result, err := awxService.InventorySourceService.Create(map[string]interface{}{
 		"name":                 d.Get("name").(string),
 		"description":          d.Get("description").(string),
 		"enabled_var":          d.Get("enabled_var").(string),
@@ -164,14 +163,14 @@ func resourceInventorySourceCreate(ctx context.Context, d *schema.ResourceData, 
 }
 
 func resourceInventorySourceUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.InventorySourcesService
+	awxService := m.(awx.AWX)
+
 	id, diags := convertStateIDToNummeric(diagElementInventorySourceTitle, d)
 	if diags.HasError() {
 		return diags
 	}
 
-	_, err := awxService.UpdateInventorySource(id, map[string]interface{}{
+	_, err := awxService.InventorySourceService.Update(id, map[string]interface{}{
 		"name":                 d.Get("name").(string),
 		"description":          d.Get("description").(string),
 		"enabled_var":          d.Get("enabled_var").(string),
@@ -202,16 +201,16 @@ func resourceInventorySourceUpdate(ctx context.Context, d *schema.ResourceData, 
 }
 
 func resourceInventorySourceDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.InventorySourcesService
+	awxService := m.(awx.AWX)
+
 	id, diags := convertStateIDToNummeric(diagElementInventorySourceTitle, d)
 	if diags.HasError() {
 		return diags
 	}
-	if _, err := awxService.DeleteInventorySource(id); err != nil {
+	if _, err := awxService.InventorySourceService.Delete(id); err != nil {
 		return buildDiagDeleteFail(
-			"inventroy source",
-			fmt.Sprintf("inventroy source %v, got %s ",
+			"Inventory Source",
+			fmt.Sprintf("Inventory Source %v, got %s ",
 				id, err.Error()))
 	}
 	d.SetId("")
@@ -219,13 +218,13 @@ func resourceInventorySourceDelete(ctx context.Context, d *schema.ResourceData, 
 }
 
 func resourceInventorySourceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
-	client := m.(*awx.AWX)
-	awxService := client.InventorySourcesService
+	awxService := m.(awx.AWX)
+
 	id, diags := convertStateIDToNummeric(diagElementInventorySourceTitle, d)
 	if diags.HasError() {
 		return diags
 	}
-	res, err := awxService.GetInventorySourceByID(id, make(map[string]string))
+	res, err := awxService.InventorySourceService.GetByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail(diagElementInventorySourceTitle, id, err)
 	}

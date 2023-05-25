@@ -1,20 +1,20 @@
 /*
 Use this data source to list teams.
 
-Example Usage
+# Example Usage
 
 ```hcl
 data "awx_team" "default" {}
 
-data "awx_team" "default" {
-    name = "Default"
-}
+	data "awx_team" "default" {
+	    name = "Default"
+	}
 
-data "awx_team" "default" {
-    id = 1
-}
+	data "awx_team" "default" {
+	    id = 1
+	}
+
 ```
-
 */
 package awx
 
@@ -22,7 +22,7 @@ import (
 	"context"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -47,7 +47,7 @@ func dataSourceTeam() *schema.Resource {
 
 func dataSourceTeamsRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
-	client := m.(*awx.AWX)
+	client := m.(awx.AWX)
 	params := make(map[string]string)
 	if teamName, okName := d.GetOk("name"); okName {
 		params["name"] = teamName.(string)
@@ -57,7 +57,7 @@ func dataSourceTeamsRead(ctx context.Context, d *schema.ResourceData, m interfac
 		params["id"] = strconv.Itoa(teamID.(int))
 	}
 
-	teams, _, err := client.TeamService.ListTeams(params)
+	teams, _, err := client.TeamService.List(params)
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Get: Fail to fetch Team",
