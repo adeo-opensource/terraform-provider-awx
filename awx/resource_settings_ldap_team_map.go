@@ -31,7 +31,7 @@ import (
 	"sync"
 	"time"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -98,7 +98,7 @@ func resourceSettingsLDAPTeamMapCreate(ctx context.Context, d *schema.ResourceDa
 
 	awxService := m.(awx.AWX)
 
-	res, err := awxService.GetSettingsBySlug("ldap", make(map[string]string))
+	res, err := awxService.SettingService.GetSettingsBySlug("ldap", make(map[string]string))
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Create: failed to fetch settings",
@@ -141,7 +141,7 @@ func resourceSettingsLDAPTeamMapCreate(ctx context.Context, d *schema.ResourceDa
 		"AUTH_LDAP_TEAM_MAP": tmaps,
 	}
 
-	_, err = awxService.UpdateSettings("ldap", payload, make(map[string]string))
+	_, err = awxService.SettingService.UpdateSettings("ldap", payload, make(map[string]string))
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Create: team map not created",
@@ -160,7 +160,7 @@ func resourceSettingsLDAPTeamMapUpdate(ctx context.Context, d *schema.ResourceDa
 
 	awxService := m.(awx.AWX)
 
-	res, err := awxService.GetSettingsBySlug("ldap", make(map[string]string))
+	res, err := awxService.SettingService.GetSettingsBySlug("ldap", make(map[string]string))
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Update: Unable to fetch settings",
@@ -198,7 +198,7 @@ func resourceSettingsLDAPTeamMapUpdate(ctx context.Context, d *schema.ResourceDa
 		"AUTH_LDAP_TEAM_MAP": tmaps,
 	}
 
-	_, err = awxService.UpdateSettings("ldap", payload, make(map[string]string))
+	_, err = awxService.SettingService.UpdateSettings("ldap", payload, make(map[string]string))
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Update: team map not created",
@@ -214,7 +214,7 @@ func resourceSettingsLDAPTeamMapRead(ctx context.Context, d *schema.ResourceData
 	var diags diag.Diagnostics
 	awxService := m.(awx.AWX)
 
-	res, err := awxService.GetSettingsBySlug("ldap", make(map[string]string))
+	res, err := awxService.SettingService.GetSettingsBySlug("ldap", make(map[string]string))
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Unable to fetch settings",
@@ -272,7 +272,7 @@ func resourceSettingsLDAPTeamMapDelete(ctx context.Context, d *schema.ResourceDa
 	var diags diag.Diagnostics
 	awxService := m.(awx.AWX)
 
-	res, err := awxService.GetSettingsBySlug("ldap", make(map[string]string))
+	res, err := awxService.SettingService.GetSettingsBySlug("ldap", make(map[string]string))
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Delete: Unable to fetch settings",
@@ -296,7 +296,7 @@ func resourceSettingsLDAPTeamMapDelete(ctx context.Context, d *schema.ResourceDa
 		"AUTH_LDAP_TEAM_MAP": tmaps,
 	}
 
-	_, err = awxService.UpdateSettings("ldap", payload, make(map[string]string))
+	_, err = awxService.SettingService.UpdateSettings("ldap", payload, make(map[string]string))
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Delete: team map not updated",

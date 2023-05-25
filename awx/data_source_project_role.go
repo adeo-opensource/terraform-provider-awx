@@ -22,7 +22,7 @@ import (
 	"context"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -64,7 +64,7 @@ func dataSourceProjectRolesRead(ctx context.Context, d *schema.ResourceData, m i
 		return diags
 	}
 
-	project, err := client.GetProjectByID(projectId, params)
+	project, err := client.ProjectService.GetByID(projectId, params)
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Get: Fail to fetch Project",
@@ -73,7 +73,7 @@ func dataSourceProjectRolesRead(ctx context.Context, d *schema.ResourceData, m i
 		)
 	}
 
-	roleslist := []*awx.ApplyRole{
+	rolesList := []*awx.ApplyRole{
 		project.SummaryFields.ObjectRoles.UseRole,
 		project.SummaryFields.ObjectRoles.AdminRole,
 		project.SummaryFields.ObjectRoles.UpdateRole,
@@ -82,7 +82,7 @@ func dataSourceProjectRolesRead(ctx context.Context, d *schema.ResourceData, m i
 
 	if roleID, okID := d.GetOk("id"); okID {
 		id := roleID.(int)
-		for _, v := range roleslist {
+		for _, v := range rolesList {
 			if v != nil && id == v.ID {
 				d = setProjectRoleData(d, v)
 				return diags
@@ -93,7 +93,7 @@ func dataSourceProjectRolesRead(ctx context.Context, d *schema.ResourceData, m i
 	if roleName, okName := d.GetOk("name"); okName {
 		name := roleName.(string)
 
-		for _, v := range roleslist {
+		for _, v := range rolesList {
 			if v != nil && name == v.Name {
 				d = setProjectRoleData(d, v)
 				return diags

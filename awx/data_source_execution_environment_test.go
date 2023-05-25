@@ -3,7 +3,7 @@ package awx
 import (
 	"context"
 	"fmt"
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/stretchr/testify/mock"
 	"testing"
 
@@ -26,12 +26,14 @@ func Test_dataSourceExecutionEnvironmentsRead(t *testing.T) {
 				Detail:   "Fail to find the execution environment got: nothing",
 			}},
 			mock: func(mockAWX *MockAWX) {
-				mockAWX.On("ListExecutionEnvironments", mock.Anything).Return([]*awx.ExecutionEnvironment{}, &awx.ListExecutionEnvironmentsResponse{}, fmt.Errorf("nothing"))
+				mockEEService := mockAWX.ExecutionEnvironmentService.(mockGeneric[awx.ExecutionEnvironment])
+				mockEEService.On("List", mock.Anything).Return([]*awx.ExecutionEnvironment{}, &awx.ListExecutionEnvironmentsResponse{}, fmt.Errorf("nothing"))
+				mockAWX.ExecutionEnvironmentService = mockEEService
 			},
 		},
 
 		{
-			name: "Two execution environment",
+			name: "Two execution environments",
 			args: args{
 				ctx: context.Background(),
 				d:   schema.TestResourceDataRaw(t, dataSourceExecutionEnvironment().Schema, resourceDataMapExecutionEnvironment),
@@ -42,12 +44,30 @@ func Test_dataSourceExecutionEnvironmentsRead(t *testing.T) {
 				Detail:   "The query returns more than one execution environment, 2",
 			}},
 			mock: func(mockAWX *MockAWX) {
-				mockAWX.On("ListExecutionEnvironments", mock.Anything).Return([]*awx.ExecutionEnvironment{{}, {}}, &awx.ListExecutionEnvironmentsResponse{}, nil)
-
+				mockEEService := mockAWX.ExecutionEnvironmentService.(mockGeneric[awx.ExecutionEnvironment])
+				mockEEService.On("List", mock.Anything).Return([]*awx.ExecutionEnvironment{
+					{
+						ID:           1,
+						Name:         "ExecutionEnvironment1",
+						Image:        "open/awx-ee:latest",
+						Description:  "An execution environment",
+						Organization: 1,
+						Credential:   2,
+					},
+					{
+						ID:           2,
+						Name:         "ExecutionEnvironment2",
+						Image:        "open/awx-ee:latest",
+						Description:  "An execution environment",
+						Organization: 1,
+						Credential:   2,
+					},
+				}, &awx.ListExecutionEnvironmentsResponse{}, nil)
+				mockAWX.ExecutionEnvironmentService = mockEEService
 			},
 			newData: nil,
 		},
-
+		//TODO
 		{
 			name: "One execution environment",
 			args: args{
@@ -56,15 +76,16 @@ func Test_dataSourceExecutionEnvironmentsRead(t *testing.T) {
 			},
 			want: nil,
 			mock: func(mockAWX *MockAWX) {
-				mockAWX.On("ListExecutionEnvironments", mock.Anything).Return([]*awx.ExecutionEnvironment{{
+				mockEEService := mockAWX.ExecutionEnvironmentService.(mockGeneric[awx.ExecutionEnvironment])
+				mockEEService.On("List", mock.Anything).Return([]*awx.ExecutionEnvironment{{
+					ID:           3,
 					Name:         "ExecutionEnvironment",
 					Image:        "open/awx-ee:latest",
 					Description:  "An execution environment",
 					Organization: 1,
 					Credential:   2,
-					ID:           3,
 				}}, &awx.ListExecutionEnvironmentsResponse{}, nil)
-
+				mockAWX.ExecutionEnvironmentService = mockEEService
 			},
 			id: "3",
 			newData: map[string]interface{}{

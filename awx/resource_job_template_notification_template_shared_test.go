@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -26,7 +26,7 @@ func getFunctionName(temp interface{}) string {
 
 func Test_getResourceJobTemplateNotificationTemplateAssociateFuncForType(t *testing.T) {
 	type args struct {
-		client awx.JobTemplateNotificationTemplatesService
+		client awx.JobTemplateNotificationTemplateService
 		typ    string
 	}
 	tests := []struct {
@@ -79,7 +79,7 @@ func Test_getResourceJobTemplateNotificationTemplateAssociateFuncForType(t *test
 
 func Test_getResourceJobTemplateNotificationTemplateDisassociateFuncForType(t *testing.T) {
 	type args struct {
-		client awx.JobTemplateNotificationTemplatesService
+		client awx.JobTemplateNotificationTemplateService
 		typ    string
 	}
 	tests := []struct {

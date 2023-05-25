@@ -5,7 +5,7 @@ import (
 	"crypto/tls"
 	"net/http"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -118,7 +118,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		client.Transport = customTransport
 	}
 
-	var c awx.AWX
+	var c *awx.AWX
 	var err error
 	if token != "" {
 		c, err = awx.NewAWXToken(hostname, token, client)

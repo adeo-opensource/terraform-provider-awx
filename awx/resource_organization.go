@@ -19,7 +19,7 @@ import (
 	"log"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -70,7 +70,7 @@ func resourceOrganizationsCreate(ctx context.Context, d *schema.ResourceData, m 
 	var diags diag.Diagnostics
 	awxService := m.(awx.AWX)
 
-	result, err := awxService.CreateOrganization(map[string]interface{}{
+	result, err := awxService.OrganizationService.Create(map[string]interface{}{
 		"name":              d.Get("name").(string),
 		"description":       d.Get("description").(string),
 		"max_hosts":         d.Get("max_hosts").(int),
@@ -100,12 +100,12 @@ func resourceOrganizationsUpdate(ctx context.Context, d *schema.ResourceData, m 
 
 	params := make(map[string]string)
 
-	_, err := awxService.GetOrganizationsByID(id, params)
+	_, err := awxService.OrganizationService.GetByID(id, params)
 	if err != nil {
 		return buildDiagNotFoundFail("Organizations", id, err)
 	}
 
-	_, err = awxService.UpdateOrganization(id, map[string]interface{}{
+	_, err = awxService.OrganizationService.Update(id, map[string]interface{}{
 		"name":              d.Get("name").(string),
 		"description":       d.Get("description").(string),
 		"max_hosts":         d.Get("max_hosts").(int),
@@ -131,7 +131,7 @@ func resourceOrganizationsRead(ctx context.Context, d *schema.ResourceData, m in
 		return diags
 	}
 
-	res, err := awxService.GetOrganizationsByID(id, make(map[string]string))
+	res, err := awxService.OrganizationService.GetByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("Organization", id, err)
 
@@ -149,7 +149,7 @@ func resourceOrganizationsDelete(ctx context.Context, d *schema.ResourceData, m 
 		return diags
 	}
 
-	if _, err := awxService.DeleteOrganization(id); err != nil {
+	if _, err := awxService.OrganizationService.Delete(id); err != nil {
 		return buildDiagDeleteFail(digMessagePart, fmt.Sprintf("OrganizationID %v, got %s ", id, err.Error()))
 	}
 	d.SetId("")

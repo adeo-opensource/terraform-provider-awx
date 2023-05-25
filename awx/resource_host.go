@@ -27,7 +27,7 @@ import (
 	"fmt"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -85,7 +85,7 @@ func resourceHostCreate(ctx context.Context, d *schema.ResourceData, m interface
 
 	awxService := m.(awx.AWX)
 
-	result, err := awxService.CreateHost(map[string]interface{}{
+	result, err := awxService.HostService.Create(map[string]interface{}{
 		"name":        d.Get("name").(string),
 		"description": d.Get("description").(string),
 		"inventory":   d.Get("inventory_id").(int),
@@ -102,7 +102,7 @@ func resourceHostCreate(ctx context.Context, d *schema.ResourceData, m interface
 		rawGroups := d.Get("group_ids").([]interface{})
 		for _, v := range rawGroups {
 
-			_, err := awxService.AssociateGroup(hostID, map[string]interface{}{
+			_, err := awxService.HostService.AssociateGroup(hostID, map[string]interface{}{
 				"id": v.(int),
 			}, map[string]string{})
 			if err != nil {
@@ -125,7 +125,7 @@ func resourceHostUpdate(ctx context.Context, d *schema.ResourceData, m interface
 		return diags
 	}
 
-	_, err := awxService.UpdateHost(id, map[string]interface{}{
+	_, err := awxService.HostService.Update(id, map[string]interface{}{
 		"name":        d.Get("name").(string),
 		"description": d.Get("description").(string),
 		"inventory":   d.Get("inventory_id").(int),
@@ -138,10 +138,10 @@ func resourceHostUpdate(ctx context.Context, d *schema.ResourceData, m interface
 	}
 
 	if d.HasChange("group_ids") {
-		// TODO Check whats happen with removin groups ....
+		// TODO Check whats happen with removing groups ....
 		rawGroups := d.Get("group_ids").([]interface{})
 		for _, v := range rawGroups {
-			_, err := awxService.AssociateGroup(id, map[string]interface{}{
+			_, err := awxService.HostService.AssociateGroup(id, map[string]interface{}{
 				"id": v.(int),
 			}, map[string]string{})
 			if err != nil {
@@ -163,7 +163,7 @@ func resourceHostRead(ctx context.Context, d *schema.ResourceData, m interface{}
 	if diags.HasError() {
 		return diags
 	}
-	res, err := awxService.GetHostByID(id, make(map[string]string))
+	res, err := awxService.HostService.GetByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail(diagElementHostTitle, id, err)
 	}
@@ -178,7 +178,7 @@ func resourceHostDelete(ctx context.Context, d *schema.ResourceData, m interface
 		return diags
 	}
 
-	if _, err := awxService.DeleteHost(id); err != nil {
+	if _, err := awxService.HostService.Delete(id); err != nil {
 		return buildDiagDeleteFail(
 			diagElementHostTitle,
 			fmt.Sprintf("id %v, got %s ",

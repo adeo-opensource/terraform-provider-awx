@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -105,7 +105,7 @@ func resourceCredentialMachineCreate(ctx context.Context, d *schema.ResourceData
 	}
 
 	client := m.(awx.AWX)
-	cred, err := client.CreateCredentials(newCredential, map[string]string{})
+	cred, err := client.CredentialService.Create(newCredential, map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -126,7 +126,7 @@ func resourceCredentialMachineRead(ctx context.Context, d *schema.ResourceData, 
 
 	client := m.(awx.AWX)
 	id, _ := strconv.Atoi(d.Id())
-	cred, err := client.GetCredentialsByID(id, map[string]string{})
+	cred, err := client.CredentialService.GetByID(id, map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -192,7 +192,7 @@ func resourceCredentialMachineUpdate(ctx context.Context, d *schema.ResourceData
 		}
 
 		client := m.(awx.AWX)
-		_, err = client.UpdateCredentialsByID(id, updatedCredential, map[string]string{})
+		_, err = client.CredentialService.Update(id, updatedCredential, map[string]string{})
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,

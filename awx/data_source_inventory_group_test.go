@@ -3,7 +3,7 @@ package awx
 import (
 	"context"
 	"fmt"
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/stretchr/testify/mock"
@@ -24,7 +24,9 @@ func Test_dataSourceInventoryGroupRead(t *testing.T) {
 				Detail:   "inventory_id parameter is required.",
 			}},
 			mock: func(mockAWX *MockAWX) {
-				mockAWX.On("ListInventoryGroups", mock.Anything, mock.Anything).Return([]*awx.Group{}, &awx.ListGroupsResponse{}, fmt.Errorf("nothing"))
+				mockGroupService := mockAWX.GroupService.(mockGeneric[awx.Group])
+				mockGroupService.On("List", mock.Anything).Return([]*awx.Group{}, nil, fmt.Errorf("nothing"))
+				mockAWX.GroupService = mockGroupService
 			},
 		},
 		{
@@ -55,7 +57,9 @@ func Test_dataSourceInventoryGroupRead(t *testing.T) {
 				Detail:   "The Query Returns more than one Group, 2",
 			}},
 			mock: func(mockAWX *MockAWX) {
-				mockAWX.On("ListInventoryGroups", mock.Anything, mock.Anything).Return([]*awx.Group{{}, {}}, &awx.ListGroupsResponse{}, nil)
+				mockGroupService := mockAWX.GroupService.(mockGeneric[awx.Group])
+				mockGroupService.On("List", mock.Anything).Return([]*awx.Group{{}, {}}, &awx.ListGroupsResponse{}, nil)
+				mockAWX.GroupService = mockGroupService
 			},
 			newData: nil,
 		},

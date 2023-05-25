@@ -33,7 +33,7 @@ import (
 	"log"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -214,7 +214,7 @@ func resourceJobTemplateCreate(ctx context.Context, d *schema.ResourceData, m in
 	var diags diag.Diagnostics
 	awxService := m.(awx.AWX)
 
-	result, err := awxService.CreateJobTemplate(map[string]interface{}{
+	result, err := awxService.JobTemplateService.Create(map[string]interface{}{
 		"name":                     d.Get("name").(string),
 		"description":              d.Get("description").(string),
 		"job_type":                 d.Get("job_type").(string),
@@ -272,12 +272,12 @@ func resourceJobTemplateUpdate(ctx context.Context, d *schema.ResourceData, m in
 	}
 
 	params := make(map[string]string)
-	_, err := awxService.GetJobTemplateByID(id, params)
+	_, err := awxService.JobTemplateService.GetByID(id, params)
 	if err != nil {
 		return buildDiagNotFoundFail("job template", id, err)
 	}
 
-	_, err = awxService.UpdateJobTemplate(id, map[string]interface{}{
+	_, err = awxService.JobTemplateService.Update(id, map[string]interface{}{
 		"name":                     d.Get("name").(string),
 		"description":              d.Get("description").(string),
 		"job_type":                 d.Get("job_type").(string),
@@ -332,7 +332,7 @@ func resourceJobTemplateRead(ctx context.Context, d *schema.ResourceData, m inte
 		return diags
 	}
 
-	res, err := awxService.GetJobTemplateByID(id, make(map[string]string))
+	res, err := awxService.JobTemplateService.GetByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("job template", id, err)
 

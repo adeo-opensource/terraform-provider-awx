@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"gopkg.in/yaml.v2"
@@ -28,7 +28,7 @@ func resourceJobTemplateDelete(ctx context.Context, d *schema.ResourceData, m in
 	if diags.HasError() {
 		return diags
 	}
-	_, err := awxService.DeleteJobTemplate(id)
+	_, err := awxService.JobTemplateService.Delete(id)
 	if err != nil {
 		return buildDiagDeleteFail(
 			"JobTemplate",
@@ -105,7 +105,7 @@ func CredentialsServiceDeleteByID(ctx context.Context, d *schema.ResourceData, m
 
 	id, _ := strconv.Atoi(d.Id())
 	client := m.(awx.AWX)
-	err := client.DeleteCredentialsByID(id, map[string]string{})
+	_, err := client.CredentialService.Delete(id)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -121,7 +121,7 @@ func CredentialTypeServiceDeleteByID(ctx context.Context, d *schema.ResourceData
 
 	id, _ := strconv.Atoi(d.Id())
 	client := m.(awx.AWX)
-	err := client.DeleteCredentialTypeByID(id, map[string]string{})
+	_, err := client.CredentialTypeService.Delete(id)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,

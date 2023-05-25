@@ -24,7 +24,7 @@ import (
 
 	"log"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -59,7 +59,7 @@ func dataSourceJobTemplateRead(ctx context.Context, d *schema.ResourceData, m in
 		params["id"] = strconv.Itoa(groupID.(int))
 	}
 
-	jobTemplate, _, err := client.ListJobTemplates(params)
+	jobTemplate, _, err := client.JobTemplateService.List(params)
 
 	if err != nil {
 		return buildDiagnosticsMessage(

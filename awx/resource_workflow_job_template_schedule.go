@@ -23,7 +23,7 @@ import (
 	"log"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -76,7 +76,7 @@ func resourceWorkflowJobTemplateScheduleCreate(ctx context.Context, d *schema.Re
 
 	workflowJobTemplateID := d.Get("workflow_job_template_id").(int)
 
-	result, err := awxService.CreateWorkflowJobTemplateSchedule(workflowJobTemplateID, map[string]interface{}{
+	result, err := awxService.WorkflowJobTemplateScheduleService.CreateWorkflowJobTemplateSchedule(workflowJobTemplateID, map[string]interface{}{
 		"name":        d.Get("name").(string),
 		"rrule":       d.Get("rrule").(string),
 		"description": d.Get("description").(string),

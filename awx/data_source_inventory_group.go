@@ -22,7 +22,7 @@ import (
 	"context"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -74,7 +74,7 @@ func dataSourceInventoryGroupRead(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	inventoryID := d.Get("inventory_id").(int)
-	groups, _, err := client.ListInventoryGroups(inventoryID, params)
+	groups, _, err := client.InventoryService.ListInventoryGroups(inventoryID, params)
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Get: Fail to fetch Inventory Group",

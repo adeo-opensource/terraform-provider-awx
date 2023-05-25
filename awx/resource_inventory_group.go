@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -62,7 +62,7 @@ func resourceInventoryGroupCreate(ctx context.Context, d *schema.ResourceData, m
 
 	awxService := m.(awx.AWX)
 
-	result, err := awxService.CreateGroup(map[string]interface{}{
+	result, err := awxService.GroupService.Create(map[string]interface{}{
 		"name":        d.Get("name").(string),
 		"description": d.Get("description").(string),
 		"inventory":   d.Get("inventory_id").(int),
@@ -85,7 +85,7 @@ func resourceInventoryGroupUpdate(ctx context.Context, d *schema.ResourceData, m
 		return diags
 	}
 
-	_, err := awxService.UpdateGroup(id, map[string]interface{}{
+	_, err := awxService.GroupService.Update(id, map[string]interface{}{
 		"name":        d.Get("name").(string),
 		"description": d.Get("description").(string),
 		"inventory":   d.Get("inventory_id").(int),
@@ -107,7 +107,7 @@ func resourceInventoryGroupDelete(ctx context.Context, d *schema.ResourceData, m
 		return diags
 	}
 
-	if _, err := awxService.DeleteGroup(id); err != nil {
+	if _, err := awxService.GroupService.Delete(id); err != nil {
 		return buildDiagDeleteFail(
 			diagElementInventoryGroupTitle,
 			fmt.Sprintf("ID: %v, got %s ",
@@ -126,7 +126,7 @@ func resourceInventoryGroupRead(ctx context.Context, d *schema.ResourceData, m i
 		return diags
 	}
 
-	res, err := awxService.GetGroupByID(id, make(map[string]string))
+	res, err := awxService.GroupService.GetByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail(diagElementInventoryGroupTitle, id, err)
 	}

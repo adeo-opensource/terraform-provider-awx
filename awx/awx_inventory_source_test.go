@@ -1,6 +1,6 @@
 package awx
 
-import awx "github.com/denouche/goawx/client"
+import awx "github.com/adeo-opensource/goawx/client"
 
 var resourceDataMapInventorySource = map[string]interface{}{
 	"name":                 "foo",

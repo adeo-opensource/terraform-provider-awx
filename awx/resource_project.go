@@ -27,7 +27,7 @@ import (
 	"strconv"
 	"time"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -122,7 +122,7 @@ func resourceProjectCreate(ctx context.Context, d *schema.ResourceData, m interf
 
 	orgID := d.Get("organization_id").(int)
 	projectName := d.Get("name").(string)
-	_, res, err := awxService.ListProjects(map[string]string{
+	_, res, err := awxService.ProjectService.List(map[string]string{
 		"name":         projectName,
 		"organization": strconv.Itoa(orgID),
 	},
@@ -137,7 +137,7 @@ func resourceProjectCreate(ctx context.Context, d *schema.ResourceData, m interf
 	if d.Get("scm_credential_id").(int) > 0 {
 		credentials = strconv.Itoa(d.Get("scm_credential_id").(int))
 	}
-	result, err := awxService.CreateProject(map[string]interface{}{
+	result, err := awxService.ProjectService.Create(map[string]interface{}{
 		"name":                 projectName,
 		"description":          d.Get("description").(string),
 		"local_path":           d.Get("local_path").(string),
@@ -191,7 +191,7 @@ func resourceProjectUpdate(ctx context.Context, d *schema.ResourceData, m interf
 		data["local_path"] = d.Get("local_path").(string)
 	}
 
-	_, err := awxService.UpdateProject(id, data, map[string]string{})
+	_, err := awxService.ProjectService.Update(id, data, map[string]string{})
 	if err != nil {
 		return buildDiagnosticsMessage("Update: Fail To Update Project", "Fail to get Project with ID %v, got %s", id, err.Error())
 	}
@@ -207,7 +207,7 @@ func resourceProjectRead(ctx context.Context, d *schema.ResourceData, m interfac
 		return diags
 	}
 
-	res, err := awxService.GetProjectByID(id, make(map[string]string))
+	res, err := awxService.ProjectService.GetByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("project", id, err)
 	}
@@ -226,7 +226,7 @@ func resourceProjectDelete(ctx context.Context, d *schema.ResourceData, m interf
 		return diags
 	}
 
-	res, err := awxService.GetProjectByID(id, make(map[string]string))
+	res, err := awxService.ProjectService.GetByID(id, make(map[string]string))
 	if err != nil {
 		d.SetId("")
 		return buildDiagNotFoundFail("project", id, err)
@@ -238,7 +238,7 @@ func resourceProjectDelete(ctx context.Context, d *schema.ResourceData, m interf
 		jobID = int(res.SummaryFields.LastJob["id"].(float64))
 	}
 	if jobID != 0 {
-		_, err = awxService.ProjectUpdateCancel(jobID)
+		_, err = awxService.ProjectUpdatesService.ProjectUpdateCancel(jobID)
 		if err != nil {
 			return buildDiagnosticsMessage(
 				"Delete: Fail to cancel Job",
@@ -249,12 +249,12 @@ func resourceProjectDelete(ctx context.Context, d *schema.ResourceData, m interf
 	}
 	// check if finished is 0
 	for finished.IsZero() {
-		prj, _ := awxService.ProjectUpdateGet(jobID)
+		prj, _ := awxService.ProjectUpdatesService.ProjectUpdateGet(jobID)
 		finished = prj.Finished
 		time.Sleep(1 * time.Second)
 	}
 
-	if _, err = awxService.DeleteProject(id); err != nil {
+	if _, err = awxService.ProjectService.Delete(id); err != nil {
 		return buildDiagDeleteFail(digMessagePart, fmt.Sprintf("ProjectID %v, got %s ", id, err.Error()))
 	}
 	d.SetId("")

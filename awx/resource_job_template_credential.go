@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -49,12 +49,12 @@ func resourceJobTemplateCredentialsCreate(ctx context.Context, d *schema.Resourc
 	var diags diag.Diagnostics
 	awxService := m.(awx.AWX)
 	jobTemplateID := d.Get("job_template_id").(int)
-	_, err := awxService.GetJobTemplateByID(jobTemplateID, make(map[string]string))
+	_, err := awxService.JobTemplateService.GetByID(jobTemplateID, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("job template", jobTemplateID, err)
 	}
 
-	result, err := awxService.AssociateCredentials(jobTemplateID, map[string]interface{}{
+	result, err := awxService.JobTemplateService.AssociateCredentials(jobTemplateID, map[string]interface{}{
 		"id": d.Get("credential_id").(int),
 	}, map[string]string{})
 
@@ -75,12 +75,12 @@ func resourceJobTemplateCredentialsDelete(ctx context.Context, d *schema.Resourc
 	var diags diag.Diagnostics
 	awxService := m.(awx.AWX)
 	jobTemplateID := d.Get("job_template_id").(int)
-	res, err := awxService.GetJobTemplateByID(jobTemplateID, make(map[string]string))
+	res, err := awxService.JobTemplateService.GetByID(jobTemplateID, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("job template", jobTemplateID, err)
 	}
 
-	_, err = awxService.DisAssociateCredentials(res.ID, map[string]interface{}{
+	_, err = awxService.JobTemplateService.DisAssociateCredentials(res.ID, map[string]interface{}{
 		"id": d.Get("credential_id").(int),
 	}, map[string]string{})
 	if err != nil {

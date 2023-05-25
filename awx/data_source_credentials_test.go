@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -28,7 +28,9 @@ func Test_dataSourceCredentialsRead(t *testing.T) {
 				Detail:   "Unable to fetch credentials from AWX API",
 			}},
 			mock: func(mockAWX *MockAWX) {
-				mockAWX.On("ListCredentials", mock.Anything).Return([]*awx.Credential{}, fmt.Errorf("nothing"))
+				mockCredentialService := mockAWX.CredentialService.(mockGeneric[awx.Credential])
+				mockCredentialService.On("List", mock.Anything).Return([]*awx.Credential{}, nil, fmt.Errorf("nothing"))
+				mockAWX.CredentialService = mockCredentialService
 			},
 		},
 		{
@@ -39,7 +41,9 @@ func Test_dataSourceCredentialsRead(t *testing.T) {
 			},
 			want: nil,
 			mock: func(mockAWX *MockAWX) {
-				mockAWX.On("ListCredentials", mock.Anything).Return([]*awx.Credential{{ID: 1, Kind: "toto", Inputs: map[string]interface{}{"username": "borto"}}}, nil)
+				mockCredentialService := mockAWX.CredentialService.(mockGeneric[awx.Credential])
+				mockCredentialService.On("List", mock.Anything).Return([]*awx.Credential{{ID: 1, Kind: "toto", Inputs: map[string]interface{}{"username": "borto"}}}, nil, nil)
+				mockAWX.CredentialService = mockCredentialService
 			},
 			newData: map[string]interface{}{
 				"credentials": []interface{}{

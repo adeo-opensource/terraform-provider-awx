@@ -3,7 +3,7 @@ module github.com/adeo-opensource/terraform-provider-awx
 go 1.19
 
 require (
-	github.com/denouche/goawx v0.18.1-0.20230126094554-7c3d63d5e973
+	github.com/adeo-opensource/goawx v1.0.2
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.10.1
 	github.com/stretchr/testify v1.7.0
 	gopkg.in/yaml.v2 v2.4.0

@@ -3,7 +3,7 @@ package awx
 import (
 	"context"
 	"fmt"
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/stretchr/testify/mock"
@@ -12,7 +12,7 @@ import (
 
 func Test_getResourceWorkflowJobTemplateNotificationTemplateAssociateFuncForType(t *testing.T) {
 	type args struct {
-		client awx.WorkflowJobTemplateNotificationTemplatesService
+		client awx.WorkflowJobTemplateNotificationTemplateService
 		typ    string
 	}
 	tests := []struct {
@@ -65,7 +65,7 @@ func Test_getResourceWorkflowJobTemplateNotificationTemplateAssociateFuncForType
 
 func Test_getResourceWorkflowJobTemplateNotificationTemplateDisassociateFuncForType(t *testing.T) {
 	type args struct {
-		client awx.WorkflowJobTemplateNotificationTemplatesService
+		client awx.WorkflowJobTemplateNotificationTemplateService
 		typ    string
 	}
 	tests := []struct {

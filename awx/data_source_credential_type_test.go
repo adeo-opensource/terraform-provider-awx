@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -43,7 +43,9 @@ func Test_dataSourceCredentialTypeByIDRead(t *testing.T) {
 				Detail:   "Unable to fetch credential type with ID: 1. Error: error",
 			}},
 			mock: func(mockAWX *MockAWX) {
-				mockAWX.On("GetCredentialTypeByID", mock.Anything, mock.Anything).Return(&awx.CredentialType{}, fmt.Errorf("error"))
+				mockCredentialTypeService := mockAWX.CredentialTypeService.(mockGeneric[awx.CredentialType])
+				mockCredentialTypeService.On("GetByID", mock.Anything, mock.Anything).Return(&awx.CredentialType{}, fmt.Errorf("error"))
+				mockAWX.CredentialTypeService = mockCredentialTypeService
 			},
 		},
 		{
@@ -54,7 +56,9 @@ func Test_dataSourceCredentialTypeByIDRead(t *testing.T) {
 			},
 			want: nil,
 			mock: func(mockAWX *MockAWX) {
-				mockAWX.On("GetCredentialTypeByID", mock.Anything, mock.Anything).Return(&awx.CredentialType{ID: 1, Injectors: "inject", Name: "credType", Description: "cred description", Kind: "toto", Inputs: "test"}, nil)
+				mockCredentialTypeService := mockAWX.CredentialTypeService.(mockGeneric[awx.CredentialType])
+				mockCredentialTypeService.On("GetByID", mock.Anything, mock.Anything).Return(&awx.CredentialType{ID: 1, Injectors: "inject", Name: "credType", Description: "cred description", Kind: "toto", Inputs: "test"}, nil)
+				mockAWX.CredentialTypeService = mockCredentialTypeService
 			},
 			newData: map[string]interface{}{
 				"kind":        "toto",

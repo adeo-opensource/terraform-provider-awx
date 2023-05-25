@@ -25,7 +25,7 @@ import (
 	"log"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -71,7 +71,7 @@ func resourceScheduleCreate(ctx context.Context, d *schema.ResourceData, m inter
 	var diags diag.Diagnostics
 	awxService := m.(awx.AWX)
 
-	result, err := awxService.CreateSchedule(map[string]interface{}{
+	result, err := awxService.ScheduleService.Create(map[string]interface{}{
 		"name":                 d.Get("name").(string),
 		"rrule":                d.Get("rrule").(string),
 		"unified_job_template": d.Get("unified_job_template_id").(int),
@@ -102,12 +102,12 @@ func resourceScheduleUpdate(ctx context.Context, d *schema.ResourceData, m inter
 	}
 
 	params := make(map[string]string)
-	_, err := awxService.GetScheduleByID(id, params)
+	_, err := awxService.ScheduleService.GetByID(id, params)
 	if err != nil {
 		return buildDiagNotFoundFail("schedule", id, err)
 	}
 
-	_, err = awxService.UpdateSchedule(id, map[string]interface{}{
+	_, err = awxService.ScheduleService.Update(id, map[string]interface{}{
 		"name":                 d.Get("name").(string),
 		"rrule":                d.Get("rrule").(string),
 		"unified_job_template": d.Get("unified_job_template_id").(int),
@@ -135,7 +135,7 @@ func resourceScheduleRead(ctx context.Context, d *schema.ResourceData, m interfa
 		return diags
 	}
 
-	res, err := awxService.GetScheduleByID(id, make(map[string]string))
+	res, err := awxService.ScheduleService.GetByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("schedule", id, err)
 
@@ -151,7 +151,7 @@ func resourceScheduleDelete(ctx context.Context, d *schema.ResourceData, m inter
 		return diags
 	}
 
-	if _, err := awxService.DeleteSchedule(id); err != nil {
+	if _, err := awxService.ScheduleService.Delete(id); err != nil {
 		return buildDiagDeleteFail(
 			diagElementScheduleTitle,
 			fmt.Sprintf("id %v, got %s ",

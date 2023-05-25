@@ -1,7 +1,7 @@
 package awx
 
 import (
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 )
 
 var resourceDataMapTeam = map[string]interface{}{

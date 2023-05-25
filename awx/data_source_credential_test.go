@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -41,18 +41,22 @@ func Test_dataSourceCredentialByIDRead(t *testing.T) {
 				Detail:   "The given credential ID is invalid or malformed",
 			}},
 			mock: func(mockAWX *MockAWX) {
-				mockAWX.On("GetCredentialsByID", mock.Anything, mock.Anything).Return(&awx.Credential{}, fmt.Errorf("error"))
+				mockCredentialService := mockAWX.CredentialService.(mockGeneric[awx.Credential])
+				mockCredentialService.On("GetByID", mock.Anything, mock.Anything).Return(&awx.Credential{}, fmt.Errorf("error"))
+				mockAWX.CredentialService = mockCredentialService
 			},
 		},
 		{
-			name: "Credentials found",
+			name: "Credential found",
 			args: args{
 				ctx: context.Background(),
 				d:   schema.TestResourceDataRaw(t, dataSourceCredentialByID().Schema, resourceDataMapCredential),
 			},
 			want: nil,
 			mock: func(mockAWX *MockAWX) {
-				mockAWX.On("GetCredentialsByID", mock.Anything, mock.Anything).Return(&awx.Credential{ID: 1, Kind: "toto", Inputs: map[string]interface{}{"username": "borto"}}, nil)
+				mockCredentialService := mockAWX.CredentialService.(mockGeneric[awx.Credential])
+				mockCredentialService.On("GetByID", mock.Anything, mock.Anything).Return(&awx.Credential{ID: 1, Kind: "toto", Inputs: map[string]interface{}{"username": "borto"}}, nil)
+				mockAWX.CredentialService = mockCredentialService
 			},
 			newData: map[string]interface{}{
 				"username": "borto",

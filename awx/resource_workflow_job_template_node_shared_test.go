@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"testing"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 )
 
 func Test_getCreateWorkflowJobTemplateNodeStepFuncForType(t *testing.T) {

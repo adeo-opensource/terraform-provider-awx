@@ -22,7 +22,7 @@ import (
 	"context"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -57,7 +57,7 @@ func dataSourceTeamsRead(ctx context.Context, d *schema.ResourceData, m interfac
 		params["id"] = strconv.Itoa(teamID.(int))
 	}
 
-	teams, _, err := client.ListTeams(params)
+	teams, _, err := client.TeamService.List(params)
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Get: Fail to fetch Team",
@@ -74,7 +74,7 @@ func dataSourceTeamsRead(ctx context.Context, d *schema.ResourceData, m interfac
 	}
 
 	team := teams[0]
-	entitlements, _, err := client.ListTeamRoleEntitlements(team.ID, make(map[string]string))
+	entitlements, _, err := client.TeamService.ListTeamRoleEntitlements(team.ID, make(map[string]string))
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Get: Failed to fetch team role entitlements",

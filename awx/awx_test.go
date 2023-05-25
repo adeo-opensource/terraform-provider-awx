@@ -2,7 +2,7 @@ package awx
 
 import (
 	"context"
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/stretchr/testify/mock"
@@ -39,9 +39,19 @@ var (
 )
 
 func runTestCase(t *testing.T, tt commonTestCase, callback func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics) {
-	mockAWX := MockAWX{}
+	mockAWX := MockAWX{
+		Mock: mock.Mock{},
+		AWX: awx.AWX{
+			CredentialService:           mockGeneric[awx.Credential]{},
+			CredentialTypeService:       mockGeneric[awx.CredentialType]{},
+			ExecutionEnvironmentService: mockGeneric[awx.ExecutionEnvironment]{},
+			//GroupService:                mockGeneric[awx.GroupService]{},
+			HostService:      mockGeneric[awx.HostService]{},
+			InventoryService: mockGeneric[awx.InventoryService]{},
+		},
+	}
 	tt.mock(&mockAWX)
-	if got := callback(tt.args.ctx, tt.args.d, mockAWX); !reflect.DeepEqual(got, tt.want) {
+	if got := callback(tt.args.ctx, tt.args.d, mockAWX.AWX); !reflect.DeepEqual(got, tt.want) {
 		t.Errorf("%s = %v, want %v", tt.name, got, tt.want)
 	}
 	if tt.id != "" && tt.args.d.Id() != tt.id {

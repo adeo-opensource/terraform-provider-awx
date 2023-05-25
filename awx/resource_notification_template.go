@@ -33,7 +33,7 @@ import (
 	"log"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -87,7 +87,7 @@ func resourceNotificationTemplateCreate(ctx context.Context, d *schema.ResourceD
 		return diags
 	}
 
-	result, err := awxService.CreateNotificationTemplate(map[string]interface{}{
+	result, err := awxService.NotificationTemplatesService.Create(map[string]interface{}{
 		"name":                       d.Get("name").(string),
 		"description":                d.Get("description").(string),
 		"organization":               d.Get("organization_id").(int),
@@ -117,7 +117,7 @@ func resourceNotificationTemplateUpdate(ctx context.Context, d *schema.ResourceD
 	}
 
 	params := make(map[string]string)
-	_, err := awxService.GetNotificationTemplateByID(id, params)
+	_, err := awxService.NotificationTemplatesService.GetByID(id, params)
 	if err != nil {
 		return buildDiagNotFoundFail("notification_template", id, err)
 	}
@@ -134,7 +134,7 @@ func resourceNotificationTemplateUpdate(ctx context.Context, d *schema.ResourceD
 		return diags
 	}
 
-	_, err = awxService.UpdateNotificationTemplate(id, map[string]interface{}{
+	_, err = awxService.NotificationTemplatesService.Update(id, map[string]interface{}{
 		"name":                       d.Get("name").(string),
 		"description":                d.Get("description").(string),
 		"organization":               d.Get("organization_id").(int),
@@ -161,7 +161,7 @@ func resourceNotificationTemplateRead(ctx context.Context, d *schema.ResourceDat
 		return diags
 	}
 
-	res, err := awxService.GetNotificationTemplateByID(id, make(map[string]string))
+	res, err := awxService.NotificationTemplatesService.GetByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("notification_template", id, err)
 
@@ -177,7 +177,7 @@ func resourceNotificationTemplateDelete(ctx context.Context, d *schema.ResourceD
 		return diags
 	}
 
-	if _, err := awxService.DeleteNotificationTemplate(id); err != nil {
+	if _, err := awxService.NotificationTemplatesService.Delete(id); err != nil {
 		return buildDiagDeleteFail(
 			diagElementNotificationTemplateTitle,
 			fmt.Sprintf("id %v, got %s ",

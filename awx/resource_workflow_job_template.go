@@ -25,7 +25,7 @@ import (
 	"log"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -126,7 +126,7 @@ func resourceWorkflowJobTemplateCreate(ctx context.Context, d *schema.ResourceDa
 	var diags diag.Diagnostics
 	awxService := m.(awx.AWX)
 
-	result, err := awxService.CreateWorkflowJobTemplate(map[string]interface{}{
+	result, err := awxService.WorkflowJobTemplateService.Create(map[string]interface{}{
 		"name":                     d.Get("name").(string),
 		"description":              d.Get("description").(string),
 		"organization":             d.Get("organization_id").(int),
@@ -166,12 +166,12 @@ func resourceWorkflowJobTemplateUpdate(ctx context.Context, d *schema.ResourceDa
 	}
 
 	params := make(map[string]string)
-	_, err := awxService.GetWorkflowJobTemplateByID(id, params)
+	_, err := awxService.WorkflowJobTemplateService.GetByID(id, params)
 	if err != nil {
 		return buildDiagNotFoundFail("job Workflow template", id, err)
 	}
 
-	_, err = awxService.UpdateWorkflowJobTemplate(id, map[string]interface{}{
+	_, err = awxService.WorkflowJobTemplateService.Update(id, map[string]interface{}{
 		"name":                     d.Get("name").(string),
 		"description":              d.Get("description").(string),
 		"organization":             d.Get("organization_id").(int),
@@ -208,7 +208,7 @@ func resourceWorkflowJobTemplateRead(ctx context.Context, d *schema.ResourceData
 		return diags
 	}
 
-	res, err := awxService.GetWorkflowJobTemplateByID(id, make(map[string]string))
+	res, err := awxService.WorkflowJobTemplateService.GetByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("workflow job template", id, err)
 
@@ -224,7 +224,7 @@ func resourceWorkflowJobTemplateDelete(ctx context.Context, d *schema.ResourceDa
 		return diags
 	}
 
-	if _, err := awxService.DeleteWorkflowJobTemplate(id); err != nil {
+	if _, err := awxService.WorkflowJobTemplateService.Delete(id); err != nil {
 		return buildDiagDeleteFail(
 			"WorkflowJobTemplate",
 			fmt.Sprintf("id %v, got %s ",

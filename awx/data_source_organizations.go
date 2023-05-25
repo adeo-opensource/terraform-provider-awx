@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"time"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -48,7 +48,7 @@ func dataSourceOrganizationsRead(ctx context.Context, d *schema.ResourceData, m 
 
 	parsedOrgs := make([]map[string]interface{}, 0)
 
-	orgs, err := client.ListOrganizations(map[string]string{})
+	orgs, _, err := client.OrganizationService.List(map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,

@@ -48,7 +48,7 @@ import (
 	"encoding/json"
 	"time"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -89,7 +89,7 @@ type setting map[string]string
 func resourceSettingUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	awxService := m.(awx.AWX)
 
-	_, err := awxService.GetSettingsBySlug("all", make(map[string]string))
+	_, err := awxService.SettingService.GetSettingsBySlug("all", make(map[string]string))
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Update: failed to fetch settings",
@@ -124,7 +124,7 @@ func resourceSettingUpdate(ctx context.Context, d *schema.ResourceData, m interf
 		name: formatted_value,
 	}
 
-	_, err = awxService.UpdateSettings("all", payload, make(map[string]string))
+	_, err = awxService.SettingService.UpdateSettings("all", payload, make(map[string]string))
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Update: setting not updated",
@@ -140,7 +140,7 @@ func resourceSettingRead(ctx context.Context, d *schema.ResourceData, m interfac
 	var diags diag.Diagnostics
 	awxService := m.(awx.AWX)
 
-	_, err := awxService.GetSettingsBySlug("all", make(map[string]string))
+	_, err := awxService.SettingService.GetSettingsBySlug("all", make(map[string]string))
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Unable to fetch settings",

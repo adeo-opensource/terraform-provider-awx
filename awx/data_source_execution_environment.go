@@ -22,7 +22,7 @@ import (
 	"context"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -57,7 +57,7 @@ func dataSourceExecutionEnvironmentsRead(ctx context.Context, d *schema.Resource
 		params["id"] = strconv.Itoa(groupID.(int))
 	}
 
-	executionEnvironments, _, err := client.ListExecutionEnvironments(params)
+	executionEnvironments, _, err := client.ExecutionEnvironmentService.List(params)
 	if err != nil {
 		return buildDiagnosticsMessage(
 			"Get: Fail to fetch execution environment",

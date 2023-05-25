@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -72,7 +72,7 @@ func resourceCredentialInputSourceCreate(ctx context.Context, d *schema.Resource
 	}
 
 	client := m.(awx.AWX)
-	cred, err := client.CreateCredentialInputSource(newSourceInput, map[string]string{})
+	cred, err := client.CredentialInputSourceService.Create(newSourceInput, map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -93,7 +93,7 @@ func resourceCredentialInputSourceRead(ctx context.Context, d *schema.ResourceDa
 
 	client := m.(awx.AWX)
 	id, _ := strconv.Atoi(d.Id())
-	inputSource, err := client.GetCredentialInputSourceByID(id, map[string]string{})
+	inputSource, err := client.CredentialInputSourceService.GetByID(id, map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -136,7 +136,7 @@ func resourceCredentialInputSourceUpdate(ctx context.Context, d *schema.Resource
 		}
 
 		client := m.(awx.AWX)
-		_, err = client.UpdateCredentialInputSourceByID(id, updatedSourceInput, map[string]string{})
+		_, err = client.CredentialInputSourceService.Update(id, updatedSourceInput, map[string]string{})
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
@@ -155,7 +155,7 @@ func resourceCredentialInputSourceDelete(ctx context.Context, d *schema.Resource
 
 	id, _ := strconv.Atoi(d.Id())
 	client := m.(awx.AWX)
-	err := client.DeleteCredentialInputSourceByID(id, map[string]string{})
+	_, err := client.CredentialInputSourceService.Delete(id)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,

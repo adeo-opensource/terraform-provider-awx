@@ -49,7 +49,7 @@ import (
 	"strconv"
 	"time"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -108,7 +108,7 @@ func resourceTeamCreate(ctx context.Context, d *schema.ResourceData, m interface
 
 	orgID := d.Get("organization_id").(int)
 	teamName := d.Get("name").(string)
-	_, res, err := awxService.ListTeams(map[string]string{
+	_, res, err := awxService.TeamService.List(map[string]string{
 		"name":         teamName,
 		"organization": strconv.Itoa(orgID),
 	},
@@ -120,7 +120,7 @@ func resourceTeamCreate(ctx context.Context, d *schema.ResourceData, m interface
 		return buildDiagnosticsMessage("Create: Already exist", "Team with name %s  already exists in the Organization ID %v", teamName, orgID)
 	}
 
-	result, err := awxService.CreateTeam(map[string]interface{}{
+	result, err := awxService.TeamService.Create(map[string]interface{}{
 		"name":         teamName,
 		"description":  d.Get("description").(string),
 		"organization": d.Get("organization_id").(int),
@@ -157,7 +157,7 @@ func roleEntitlementUpdate(m interface{}, team_id int, roles []interface{}, remo
 			payload["disassociate"] = true // presence of key triggers removal
 		}
 
-		_, err := awxService.UpdateTeamRoleEntitlement(team_id, payload, make(map[string]string))
+		_, err := awxService.TeamService.UpdateTeamRoleEntitlement(team_id, payload, make(map[string]string))
 		if err != nil {
 			return err
 		}
@@ -202,7 +202,7 @@ func resourceTeamUpdate(ctx context.Context, d *schema.ResourceData, m interface
 		}
 		//d.SetPartial("role_entitlemen")
 	}
-	_, err := awxService.UpdateTeam(id, map[string]interface{}{
+	_, err := awxService.TeamService.Update(id, map[string]interface{}{
 		"name":         d.Get("name").(string),
 		"description":  d.Get("description").(string),
 		"organization": d.Get("organization_id").(int),
@@ -223,11 +223,11 @@ func resourceTeamRead(ctx context.Context, d *schema.ResourceData, m interface{}
 		return diags
 	}
 
-	team, err := awxService.GetTeamByID(id, make(map[string]string))
+	team, err := awxService.TeamService.GetByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("team", id, err)
 	}
-	entitlements, _, err := awxService.ListTeamRoleEntitlements(id, make(map[string]string))
+	entitlements, _, err := awxService.TeamService.ListTeamRoleEntitlements(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("team roles", id, err)
 	}
@@ -246,7 +246,7 @@ func resourceTeamDelete(ctx context.Context, d *schema.ResourceData, m interface
 		return diags
 	}
 
-	if _, err := awxService.DeleteTeam(id); err != nil {
+	if _, err := awxService.TeamService.Delete(id); err != nil {
 		return buildDiagDeleteFail(digMessagePart, fmt.Sprintf("TeamID %v, got %s ", id, err.Error()))
 	}
 	d.SetId("")

@@ -17,7 +17,7 @@ import (
 	"context"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -49,7 +49,7 @@ func dataSourceCredentialByID() *schema.Resource {
 func dataSourceCredentialByIDRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 
-	client := m.(awx.CredentialsService)
+	client := m.(awx.AWX)
 	id := d.Get("id").(int)
 
 	if id == 0 {
@@ -61,7 +61,7 @@ func dataSourceCredentialByIDRead(ctx context.Context, d *schema.ResourceData, m
 		return diags
 	}
 
-	cred, err := client.GetCredentialsByID(id, map[string]string{})
+	cred, err := client.CredentialService.GetByID(id, map[string]string{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,

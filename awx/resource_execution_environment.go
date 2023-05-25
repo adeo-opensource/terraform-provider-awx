@@ -20,7 +20,7 @@ import (
 	"log"
 	"strconv"
 
-	awx "github.com/denouche/goawx/client"
+	awx "github.com/adeo-opensource/goawx/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -64,7 +64,7 @@ func resourceExecutionEnvironmentsCreate(ctx context.Context, d *schema.Resource
 	var diags diag.Diagnostics
 	awxService := m.(awx.AWX)
 
-	result, err := awxService.CreateExecutionEnvironment(map[string]interface{}{
+	result, err := awxService.ExecutionEnvironmentService.Create(map[string]interface{}{
 		"name":         d.Get("name").(string),
 		"image":        d.Get("image").(string),
 		"description":  d.Get("description").(string),
@@ -95,12 +95,12 @@ func resourceExecutionEnvironmentsUpdate(ctx context.Context, d *schema.Resource
 
 	params := make(map[string]string)
 
-	_, err := awxService.GetExecutionEnvironmentByID(id, params)
+	_, err := awxService.ExecutionEnvironmentService.GetByID(id, params)
 	if err != nil {
 		return buildDiagNotFoundFail("ExecutionEnvironments", id, err)
 	}
 
-	_, err = awxService.UpdateExecutionEnvironment(id, map[string]interface{}{
+	_, err = awxService.ExecutionEnvironmentService.Update(id, map[string]interface{}{
 		"name":         d.Get("name").(string),
 		"image":        d.Get("image").(string),
 		"description":  d.Get("description").(string),
@@ -127,7 +127,7 @@ func resourceExecutionEnvironmentsRead(ctx context.Context, d *schema.ResourceDa
 		return diags
 	}
 
-	res, err := awxService.GetExecutionEnvironmentByID(id, make(map[string]string))
+	res, err := awxService.ExecutionEnvironmentService.GetByID(id, make(map[string]string))
 	if err != nil {
 		return buildDiagNotFoundFail("ExecutionEnvironment", id, err)
 
@@ -145,7 +145,7 @@ func resourceExecutionEnvironmentsDelete(ctx context.Context, d *schema.Resource
 		return diags
 	}
 
-	if _, err := awxService.DeleteExecutionEnvironment(id); err != nil {
+	if _, err := awxService.ExecutionEnvironmentService.Delete(id); err != nil {
 		return buildDiagDeleteFail(digMessagePart, fmt.Sprintf("ExecutionEnvironmentID %v, got %s ", id, err.Error()))
 	}
 	d.SetId("")
